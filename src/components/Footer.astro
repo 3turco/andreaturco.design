@@ -1,0 +1,46 @@
+---
+const year = new Date().getFullYear();
+
+const social = [
+  { label: 'LinkedIn', href: 'https://linkedin.com/in/andreaturco' },
+  { label: 'Behance', href: 'https://behance.net/andreaturco' },
+  { label: 'GitHub', href: 'https://github.com/andreaturco' },
+];
+---
+
+<footer
+  class="border-t mt-24"
+  style="border-color: var(--border);"
+>
+  <div class="max-w-5xl mx-auto px-6 py-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-sm" style="color: var(--fg-soft);">
+    <span>© {year} Andrea Turco</span>
+
+    <nav aria-label="Link social e risorse">
+      <ul class="flex items-center gap-5">
+        {social.map(({ label, href }) => (
+          <li>
+            <a
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="transition-opacity hover:opacity-100"
+              style="color: var(--fg-soft);"
+            >
+              {label}
+            </a>
+          </li>
+        ))}
+        <li>
+          <a
+            href="/cv-andrea-turco.pdf"
+            download
+            class="transition-opacity hover:opacity-100"
+            style="color: var(--fg-soft);"
+          >
+            CV
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</footer>

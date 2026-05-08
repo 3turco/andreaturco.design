@@ -1,0 +1,108 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="About"
+  description="Chi sono, come lavoro, cosa mi muove. Designer con base a Milano."
+>
+  <div class="max-w-5xl mx-auto px-6 pt-20 pb-24">
+    <!-- Heading -->
+    <header class="mb-16 max-w-2xl">
+      <h1
+        class="font-serif text-4xl sm:text-5xl mb-6"
+        style="font-family: 'Fraunces', Georgia, serif; font-weight: 300; color: var(--fg);"
+      >
+        About
+      </h1>
+      <p class="text-lg leading-relaxed" style="color: var(--fg-soft);">
+        Sono Andrea Turco, designer con base a Milano.
+      </p>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-16">
+      <!-- Colonna principale -->
+      <div class="lg:col-span-2 space-y-10 text-base leading-relaxed" style="color: var(--fg);">
+        <section>
+          <h2
+            class="font-serif text-xl mb-4"
+            style="font-family: 'Fraunces', Georgia, serif; font-weight: 400;"
+          >
+            Chi sono
+          </h2>
+          <p style="color: var(--fg-soft);">
+            Lavoro all'intersezione tra design visivo e design di prodotto, con una preferenza
+            per le soluzioni essenziali: quelle che funzionano bene, si capiscono subito e
+            durano nel tempo. Ho collaborato con startup, agenzie e clienti diretti, portando
+            ordine visivo e chiarezza funzionale a prodotti digitali complessi.
+          </p>
+        </section>
+
+        <section>
+          <h2
+            class="font-serif text-xl mb-4"
+            style="font-family: 'Fraunces', Georgia, serif; font-weight: 400;"
+          >
+            Come lavoro
+          </h2>
+          <p style="color: var(--fg-soft);">
+            Parto sempre dall'ascolto — capire il problema prima di disegnare la soluzione.
+            Lavoro in modo iterativo, con attenzione alla coerenza del sistema visivo e alla
+            concretezza dell'esperienza utente. Credo nel prototipare presto e nel testare spesso.
+          </p>
+        </section>
+
+        <section>
+          <h2
+            class="font-serif text-xl mb-4"
+            style="font-family: 'Fraunces', Georgia, serif; font-weight: 400;"
+          >
+            Valori
+          </h2>
+          <ul class="space-y-2" style="color: var(--fg-soft);">
+            <li>Chiarezza prima della complessità</li>
+            <li>Forma al servizio della funzione</li>
+            <li>Cura nei dettagli, visione nel quadro d'insieme</li>
+            <li>Collaborazione aperta e feedback diretto</li>
+          </ul>
+        </section>
+      </div>
+
+      <!-- Colonna laterale -->
+      <aside class="space-y-8 text-sm" style="color: var(--fg-soft);">
+        <div>
+          <h3 class="mb-3 uppercase tracking-widest text-xs" style="color: var(--fg);">Competenze</h3>
+          <ul class="space-y-1">
+            <li>UI & UX Design</li>
+            <li>Design System</li>
+            <li>Prototipazione</li>
+            <li>Brand Identity</li>
+            <li>Design Research</li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="mb-3 uppercase tracking-widest text-xs" style="color: var(--fg);">Strumenti</h3>
+          <ul class="space-y-1">
+            <li>Figma</li>
+            <li>Framer</li>
+            <li>Astro / HTML / CSS</li>
+            <li>Adobe CC</li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="mb-3 uppercase tracking-widest text-xs" style="color: var(--fg);">CV</h3>
+          <a
+            href="/cv-andrea-turco.pdf"
+            download
+            class="underline underline-offset-2 transition-opacity hover:opacity-60"
+            style="color: var(--fg);"
+          >
+            Scarica il CV →
+          </a>
+        </div>
+      </aside>
+    </div>
+  </div>
+</BaseLayout>

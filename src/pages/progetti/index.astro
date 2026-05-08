@@ -1,0 +1,41 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import { getCollection } from 'astro:content';
+
+const projects = await getCollection('progetti', ({ data }) => !data.draft);
+const sorted = projects.sort((a, b) => b.data.year - a.data.year);
+---
+
+<BaseLayout
+  title="Progetti"
+  description="Raccolta di progetti di design: identità visive, prodotti digitali, esperienze utente."
+>
+  <div class="max-w-5xl mx-auto px-6 pt-20 pb-24">
+    <header class="mb-16">
+      <h1
+        class="font-serif text-4xl sm:text-5xl"
+        style="font-family: 'Fraunces', Georgia, serif; font-weight: 300; color: var(--fg);"
+      >
+        Progetti
+      </h1>
+    </header>
+
+    {sorted.length > 0 ? (
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+        {sorted.map((p) => (
+          <ProjectCard
+            title={p.data.title}
+            description={p.data.description}
+            year={p.data.year}
+            tags={p.data.tags}
+            slug={p.id}
+            cover={p.data.cover}
+          />
+        ))}
+      </div>
+    ) : (
+      <p style="color: var(--fg-soft);">Nessun progetto disponibile.</p>
+    )}
+  </div>
+</BaseLayout>

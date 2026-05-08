@@ -1,17 +1,137 @@
 ---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import { getCollection } from 'astro:content';
 
+const allProjects = await getCollection('progetti', ({ data }) => !data.draft);
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+
+const latestProjects = allProjects
+  .sort((a, b) => b.data.year - a.data.year)
+  .slice(0, 3);
+
+const latestPosts = allPosts
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 2);
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout
+  title="Andrea Turco"
+  description="Designer. Creo esperienze digitali essenziali, con attenzione al dettaglio e alla chiarezza."
+>
+  <!-- Hero -->
+  <section class="max-w-5xl mx-auto px-6 pt-24 pb-20">
+    <h1
+      class="font-serif text-5xl sm:text-6xl md:text-7xl leading-tight mb-6"
+      style="font-family: 'Fraunces', Georgia, serif; font-weight: 300; color: var(--fg);"
+    >
+      Andrea Turco
+    </h1>
+    <p
+      class="text-lg sm:text-xl max-w-xl leading-relaxed"
+      style="color: var(--fg-soft);"
+    >
+      Designer. Creo esperienze digitali essenziali,<br />
+      con attenzione al dettaglio e alla chiarezza.
+    </p>
+  </section>
+
+  <!-- Progetti in evidenza -->
+  <section class="max-w-5xl mx-auto px-6 pb-24">
+    <div class="flex items-baseline justify-between mb-10">
+      <h2
+        class="font-serif text-2xl"
+        style="font-family: 'Fraunces', Georgia, serif; font-weight: 400; color: var(--fg);"
+      >
+        Progetti selezionati
+      </h2>
+      <a
+        href="/progetti"
+        class="text-sm transition-opacity hover:opacity-60"
+        style="color: var(--fg-soft);"
+      >
+        Tutti i progetti →
+      </a>
+    </div>
+
+    {latestProjects.length > 0 ? (
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+        {latestProjects.map((p) => (
+          <ProjectCard
+            title={p.data.title}
+            description={p.data.description}
+            year={p.data.year}
+            tags={p.data.tags}
+            slug={p.id}
+            cover={p.data.cover}
+          />
+        ))}
+      </div>
+    ) : (
+      <p class="text-sm" style="color: var(--fg-soft);">Nessun progetto disponibile.</p>
+    )}
+  </section>
+
+  <!-- Divisore -->
+  <div class="max-w-5xl mx-auto px-6">
+    <hr style="border-color: var(--border);" />
+  </div>
+
+  <!-- Ultimi articoli -->
+  {latestPosts.length > 0 && (
+    <section class="max-w-5xl mx-auto px-6 py-24">
+      <div class="flex items-baseline justify-between mb-2">
+        <h2
+          class="font-serif text-2xl"
+          style="font-family: 'Fraunces', Georgia, serif; font-weight: 400; color: var(--fg);"
+        >
+          Dal blog
+        </h2>
+        <a
+          href="/blog"
+          class="text-sm transition-opacity hover:opacity-60"
+          style="color: var(--fg-soft);"
+        >
+          Tutti gli articoli →
+        </a>
+      </div>
+      <div>
+        {latestPosts.map((post) => (
+          <ArticleCard
+            title={post.data.title}
+            description={post.data.description}
+            date={post.data.date}
+            slug={post.id}
+            tags={post.data.tags}
+          />
+        ))}
+      </div>
+    </section>
+  )}
+
+  <!-- CTA Contatti -->
+  <section class="max-w-5xl mx-auto px-6 pb-24">
+    <div
+      class="border p-10 sm:p-14"
+      style="border-color: var(--border);"
+    >
+      <h2
+        class="font-serif text-3xl sm:text-4xl mb-4"
+        style="font-family: 'Fraunces', Georgia, serif; font-weight: 300; color: var(--fg);"
+      >
+        Parliamoci.
+      </h2>
+      <p class="text-sm mb-8 max-w-sm leading-relaxed" style="color: var(--fg-soft);">
+        Hai un progetto in mente o vuoi semplicemente scambiarci due parole?
+      </p>
+      <a
+        href="/contatti"
+        class="inline-block text-sm border px-5 py-2.5 transition-opacity hover:opacity-60"
+        style="border-color: var(--fg); color: var(--fg);"
+      >
+        Scrivimi
+      </a>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import { getCollection } from 'astro:content';
+
+const posts = await getCollection('blog', ({ data }) => !data.draft);
+const sorted = posts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+---
+
+<BaseLayout
+  title="Blog"
+  description="Riflessioni su design, processo creativo e lavoro digitale."
+>
+  <div class="max-w-5xl mx-auto px-6 pt-20 pb-24">
+    <header class="mb-12">
+      <h1
+        class="font-serif text-4xl sm:text-5xl"
+        style="font-family: 'Fraunces', Georgia, serif; font-weight: 300; color: var(--fg);"
+      >
+        Blog
+      </h1>
+    </header>
+
+    {sorted.length > 0 ? (
+      <div class="max-w-2xl">
+        {sorted.map((post) => (
+          <ArticleCard
+            title={post.data.title}
+            description={post.data.description}
+            date={post.data.date}
+            slug={post.id}
+            tags={post.data.tags}
+          />
+        ))}
+      </div>
+    ) : (
+      <p style="color: var(--fg-soft);">Nessun articolo disponibile.</p>
+    )}
+  </div>
+</BaseLayout>

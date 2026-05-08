@@ -1,0 +1,63 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const social = [
+  { label: 'LinkedIn', href: 'https://linkedin.com/in/andreaturco' },
+  { label: 'Behance', href: 'https://behance.net/andreaturco' },
+  { label: 'GitHub', href: 'https://github.com/andreaturco' },
+];
+---
+
+<BaseLayout
+  title="Contatti"
+  description="Scrivimi per collaborazioni, progetti o semplicemente per parlare di design."
+>
+  <div class="max-w-5xl mx-auto px-6 pt-20 pb-24">
+    <header class="mb-16">
+      <h1
+        class="font-serif text-4xl sm:text-5xl mb-6"
+        style="font-family: 'Fraunces', Georgia, serif; font-weight: 300; color: var(--fg);"
+      >
+        Contatti
+      </h1>
+      <p class="text-lg max-w-md leading-relaxed" style="color: var(--fg-soft);">
+        Hai un progetto, una proposta o vuoi semplicemente scambiarci due parole?
+        Scrivimi, rispondo entro 48 ore.
+      </p>
+    </header>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-16 max-w-2xl">
+      <!-- Email -->
+      <div>
+        <h2 class="text-xs uppercase tracking-widest mb-3" style="color: var(--fg);">Email</h2>
+        <a
+          href="mailto:ciao@andreaturco.design"
+          class="text-lg underline underline-offset-4 transition-opacity hover:opacity-60"
+          style="color: var(--fg);"
+        >
+          ciao@andreaturco.design
+        </a>
+      </div>
+
+      <!-- Social -->
+      <div>
+        <h2 class="text-xs uppercase tracking-widest mb-3" style="color: var(--fg);">Altrove</h2>
+        <ul class="space-y-2">
+          {social.map(({ label, href }) => (
+            <li>
+              <a
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="underline underline-offset-2 transition-opacity hover:opacity-60"
+                style="color: var(--fg-soft);"
+              >
+                {label} ↗
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

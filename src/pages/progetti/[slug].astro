@@ -1,0 +1,136 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection, render } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const projects = await getCollection('progetti', ({ data }) => !data.draft);
+  return projects.map((p) => ({ params: { slug: p.id }, props: { project: p } }));
+};
+
+const { project } = Astro.props;
+const { data } = project;
+const { Content } = await render(project);
+---
+
+<BaseLayout
+  title={data.title}
+  description={data.description}
+  image={data.cover}
+  type="article"
+>
+  <article class="max-w-5xl mx-auto px-6 pt-20 pb-24">
+    <!-- Header progetto -->
+    <header class="mb-16 max-w-2xl">
+      <p class="text-sm mb-4 uppercase tracking-widest" style="color: var(--fg-soft);">
+        {data.year}{data.client ? ` — ${data.client}` : ''}
+      </p>
+      <h1
+        class="font-serif text-4xl sm:text-5xl mb-6"
+        style="font-family: 'Fraunces', Georgia, serif; font-weight: 300; color: var(--fg);"
+      >
+        {data.title}
+      </h1>
+      <p class="text-lg leading-relaxed" style="color: var(--fg-soft);">{data.description}</p>
+    </header>
+
+    <!-- Cover -->
+    {data.cover && (
+      <div class="mb-16 border" style="border-color: var(--border);">
+        <img
+          src={data.cover}
+          alt={`Cover del progetto ${data.title}`}
+          class="w-full"
+          loading="eager"
+          decoding="async"
+        />
+      </div>
+    )}
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-16">
+      <!-- Contenuto principale -->
+      <div class="lg:col-span-2">
+        <div class="prose max-w-none">
+          <Content />
+        </div>
+
+        <!-- Galleria -->
+        {data.gallery && data.gallery.length > 0 && (
+          <div class="mt-12 space-y-4">
+            {data.gallery.map((img, i) => (
+              <div class="border" style="border-color: var(--border);">
+                <img
+                  src={img}
+                  alt={`Immagine ${i + 1} del progetto ${data.title}`}
+                  class="w-full"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <!-- Sidebar metadati -->
+      <aside class="space-y-8 text-sm" style="color: var(--fg-soft);">
+        <div>
+          <h2 class="text-xs uppercase tracking-widest mb-2" style="color: var(--fg);">Ruolo</h2>
+          <p>{data.role}</p>
+        </div>
+
+        {data.client && (
+          <div>
+            <h2 class="text-xs uppercase tracking-widest mb-2" style="color: var(--fg);">Cliente</h2>
+            <p>{data.client}</p>
+          </div>
+        )}
+
+        <div>
+          <h2 class="text-xs uppercase tracking-widest mb-2" style="color: var(--fg);">Anno</h2>
+          <p>{data.year}</p>
+        </div>
+
+        <div>
+          <h2 class="text-xs uppercase tracking-widest mb-2" style="color: var(--fg);">Tag</h2>
+          <ul class="flex flex-wrap gap-2">
+            {data.tags.map((tag) => (
+              <li
+                class="text-xs border px-2 py-0.5"
+                style="border-color: var(--border); color: var(--fg-soft);"
+              >
+                {tag}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {data.link && (
+          <div>
+            <h2 class="text-xs uppercase tracking-widest mb-2" style="color: var(--fg);">Link</h2>
+            <a
+              href={data.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="underline underline-offset-2 transition-opacity hover:opacity-60 break-all"
+              style="color: var(--fg);"
+            >
+              Visita il progetto ↗
+            </a>
+          </div>
+        )}
+      </aside>
+    </div>
+
+    <!-- Nav tra progetti -->
+    <nav class="mt-20 pt-8 border-t" style="border-color: var(--border);" aria-label="Torna ai progetti">
+      <a
+        href="/progetti"
+        class="text-sm transition-opacity hover:opacity-60"
+        style="color: var(--fg-soft);"
+      >
+        ← Tutti i progetti
+      </a>
+    </nav>
+  </article>
+</BaseLayout>
