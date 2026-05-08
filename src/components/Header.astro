@@ -1,0 +1,98 @@
+---
+const nav = [
+  { label: 'Progetti', href: '/progetti' },
+  { label: 'About', href: '/about' },
+  { label: 'Contatti', href: '/contatti' },
+];
+
+const currentPath = Astro.url.pathname;
+---
+
+<header
+  class="sticky top-0 z-50 border-b"
+  style="background-color: var(--bg); border-color: var(--border);"
+  transition:persist
+>
+  <div class="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
+    <!-- Logo -->
+    <a
+      href="/"
+      class="font-serif text-lg tracking-tight transition-opacity hover:opacity-60"
+      style="color: var(--fg); font-family: 'Fraunces', Georgia, serif; font-weight: 400;"
+      aria-label="Andrea Turco — Home"
+    >
+      AT
+    </a>
+
+    <!-- Nav -->
+    <nav aria-label="Navigazione principale">
+      <ul class="flex items-center gap-6 text-sm" style="color: var(--fg-soft);">
+        {nav.map(({ label, href }) => (
+          <li>
+            <a
+              href={href}
+              class="transition-colors hover:opacity-100"
+              style={`color: ${currentPath.startsWith(href) ? 'var(--fg)' : 'var(--fg-soft)'}; font-weight: ${currentPath.startsWith(href) ? '500' : '400'};`}
+              aria-current={currentPath.startsWith(href) ? 'page' : undefined}
+            >
+              {label}
+            </a>
+          </li>
+        ))}
+
+        <!-- CV -->
+        <li>
+          <a
+            href="/cv-andrea-turco.pdf"
+            class="text-sm border px-3 py-1 transition-opacity hover:opacity-60"
+            style="border-color: var(--border); color: var(--fg);"
+            download
+            aria-label="Scarica il CV di Andrea Turco in PDF"
+          >
+            CV
+          </a>
+        </li>
+
+        <!-- Dark mode toggle -->
+        <li>
+          <button
+            id="theme-toggle"
+            aria-label="Cambia tema chiaro/scuro"
+            class="w-8 h-8 flex items-center justify-center transition-opacity hover:opacity-60"
+            style="color: var(--fg-soft);"
+          >
+            <span id="icon-light" aria-hidden="true">☀</span>
+            <span id="icon-dark" aria-hidden="true" class="hidden">☾</span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<script>
+  function initThemeToggle() {
+    const btn = document.getElementById('theme-toggle');
+    const iconLight = document.getElementById('icon-light');
+    const iconDark = document.getElementById('icon-dark');
+    if (!btn || !iconLight || !iconDark) return;
+
+    function syncIcons() {
+      const isDark = document.documentElement.classList.contains('dark');
+      iconLight.classList.toggle('hidden', isDark);
+      iconDark.classList.toggle('hidden', !isDark);
+    }
+
+    syncIcons();
+
+    btn.addEventListener('click', () => {
+      const isDark = document.documentElement.classList.contains('dark');
+      document.documentElement.classList.toggle('dark', !isDark);
+      localStorage.setItem('theme', isDark ? 'light' : 'dark');
+      syncIcons();
+    });
+  }
+
+  initThemeToggle();
+  document.addEventListener('astro:after-swap', initThemeToggle);
+</script>

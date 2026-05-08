@@ -1,0 +1,94 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection, render } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  return posts.map((p) => ({ params: { slug: p.id }, props: { post: p } }));
+};
+
+const { post } = Astro.props;
+const { data } = post;
+const { Content, remarkPluginFrontmatter } = await render(post);
+
+const formattedDate = data.date.toLocaleDateString('it-IT', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+
+// Reading time: ~200 words/min
+const readingTime = remarkPluginFrontmatter?.readingTime as string | undefined;
+---
+
+<BaseLayout
+  title={data.title}
+  description={data.description}
+  image={data.cover}
+  type="article"
+>
+  <article class="max-w-5xl mx-auto px-6 pt-20 pb-24">
+    <!-- Header -->
+    <header class="mb-16 max-w-2xl">
+      <div class="flex items-center gap-4 mb-6 text-sm" style="color: var(--fg-soft);">
+        <time datetime={data.date.toISOString()}>{formattedDate}</time>
+        {readingTime && <span>·</span>}
+        {readingTime && <span>{readingTime}</span>}
+      </div>
+      <h1
+        class="font-serif text-4xl sm:text-5xl mb-6"
+        style="font-family: 'Fraunces', Georgia, serif; font-weight: 300; color: var(--fg);"
+      >
+        {data.title}
+      </h1>
+      <p class="text-lg leading-relaxed" style="color: var(--fg-soft);">{data.description}</p>
+    </header>
+
+    {data.cover && (
+      <div class="mb-16 border" style="border-color: var(--border);">
+        <img
+          src={data.cover}
+          alt={`Cover dell'articolo ${data.title}`}
+          class="w-full"
+          loading="eager"
+          decoding="async"
+        />
+      </div>
+    )}
+
+    <!-- Testo -->
+    <div class="max-w-2xl">
+      <div class="prose">
+        <Content />
+      </div>
+
+      <!-- Tags -->
+      {data.tags.length > 0 && (
+        <div class="mt-12 pt-8 border-t" style="border-color: var(--border);">
+          <ul class="flex flex-wrap gap-2" aria-label="Tag dell'articolo">
+            {data.tags.map((tag) => (
+              <li
+                class="text-xs border px-2 py-0.5"
+                style="border-color: var(--border); color: var(--fg-soft);"
+              >
+                {tag}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+
+    <!-- Nav -->
+    <nav class="mt-16 pt-8 border-t" style="border-color: var(--border);" aria-label="Torna al blog">
+      <a
+        href="/blog"
+        class="text-sm transition-opacity hover:opacity-60"
+        style="color: var(--fg-soft);"
+      >
+        ← Tutti gli articoli
+      </a>
+    </nav>
+  </article>
+</BaseLayout>
