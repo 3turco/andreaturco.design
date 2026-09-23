@@ -1,0 +1,440 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { marked } from 'marked';
+import type { GetStaticPaths } from 'astro';
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const projects = await getCollection('work', ({ data, id }) => !data.draft && id.startsWith('it/'));
+  const sorted = projects.sort((a, b) => b.data.year - a.data.year);
+  return sorted.map((p, i) => ({
+    params: { slug: p.id.replace(/^it\//, '') },
+    props: {
+      project: p,
+      prev: sorted[i - 1] ?? null,
+      next: sorted[i + 1] ?? null,
+    },
+  }));
+};
+
+const { project, prev, next } = Astro.props;
+const { data, body } = project;
+
+function slugOf(id: string) {
+  return id.replace(/^(it|en)\//, '');
+}
+
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
+// Split del body markdown per sezione H2.
+// Ogni sezione: { id, title, html }
+type Section = { id: string; title: string; html: string };
+const rawBody = body ?? '';
+const parts = rawBody.split(/^## /m).filter((s: string) => s.trim());
+
+// Prima parte può essere il testo prima del primo H2 (intro senza header)
+let intro: string | null = null;
+let sectionSources: string[] = parts;
+if (!rawBody.trimStart().startsWith('## ')) {
+  intro = parts[0];
+  sectionSources = parts.slice(1);
+}
+
+const sections: Section[] = sectionSources.map((raw: string) => {
+  const [firstLine, ...rest] = raw.split('\n');
+  const title = firstLine.trim();
+  const bodyMd = rest.join('\n').trim();
+  return {
+    id: slugify(title),
+    title,
+    html: marked.parse(bodyMd, { async: false }) as string,
+  };
+});
+
+const introHtml = intro ? (marked.parse(intro, { async: false }) as string) : null;
+
+const titleParts = data.title.split('·').map((s: string) => s.trim());
+const images = data.images ?? [];
+
+type CaseImage = { src: string; alt: string; caption?: string; after?: string };
+function imagesAfter(sectionId: string): CaseImage[] {
+  return images.filter((img: CaseImage) => img.after === sectionId);
+}
+const orphanImages: CaseImage[] = images.filter((img: CaseImage) => !img.after || !sections.find((s) => s.id === img.after));
+---
+
+<BaseLayout
+  title={data.title}
+  description={data.description}
+  image={data.cover}
+  type="article"
+>
+  <article class="case-study">
+    <div class="container">
+      <!-- BREADCRUMB -->
+      <nav class="breadcrumb mono" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span class="crumb-sep">/</span>
+        <a href="/projects">Projects</a>
+        <span class="crumb-sep">/</span>
+        <span class="crumb-current">{titleParts[titleParts.length - 1]}</span>
+      </nav>
+
+      <!-- HEADER -->
+      <header class="cs-header">
+        <div class="cs-meta">
+          {data.sector && <span class="mono">{data.sector}</span>}
+          {data.nda && <span class="mono cs-nda">NDA</span>}
+        </div>
+        <h1 class="cs-title display">{data.title}</h1>
+        <p class="cs-desc">{data.description}</p>
+      </header>
+
+      <!-- Cover opzionale -->
+      {data.cover && (
+        <div class="cs-cover">
+          <img src={data.cover} alt={`Cover del progetto ${data.title}`} loading="eager" decoding="async" />
+        </div>
+      )}
+
+      <!-- INTRO (eventuale testo prima del primo H2) -->
+      {introHtml && (
+        <div class="prose" set:html={introHtml}></div>
+      )}
+
+      <!-- SEZIONI intervallate con immagini specifiche `after` -->
+      {sections.map((section) => (
+        <section class="cs-section" id={section.id}>
+          <h2 class="cs-section-title">{section.title}</h2>
+          <div class="prose" set:html={section.html}></div>
+          {imagesAfter(section.id).length > 0 && (
+            <div class="cs-images">
+              {imagesAfter(section.id).map((img) => (
+                <figure class="cs-figure">
+                  <div class="cs-placeholder" role="img" aria-label={img.alt}></div>
+                  {img.caption && <figcaption class="mono">{img.caption}</figcaption>}
+                </figure>
+              ))}
+            </div>
+          )}
+        </section>
+      ))}
+
+      <!-- Immagini orfane (senza after o after invalido) — a fondo pagina -->
+      {orphanImages.length > 0 && (
+        <div class="cs-images">
+          {orphanImages.map((img) => (
+            <figure class="cs-figure">
+              <div class="cs-placeholder" role="img" aria-label={img.alt}></div>
+              {img.caption && <figcaption class="mono">{img.caption}</figcaption>}
+            </figure>
+          ))}
+        </div>
+      )}
+
+      <!-- Link esterno -->
+      {data.link && (
+        <div class="cs-link-wrap">
+          <a href={data.link} target="_blank" rel="noopener noreferrer" class="cs-link">
+            Visita il progetto ↗
+          </a>
+        </div>
+      )}
+
+      <!-- PREV / NEXT + BACK -->
+      <div class="cs-footer-nav">
+        <div class="cs-nav-row">
+          {prev ? (
+            <a href={`/projects/${slugOf(prev.id)}`} class="cs-nav-item">
+              <span class="mono cs-nav-label">← Progetto precedente</span>
+              <span class="cs-nav-title">{prev.data.title}</span>
+            </a>
+          ) : <div />}
+          {next ? (
+            <a href={`/projects/${slugOf(next.id)}`} class="cs-nav-item cs-nav-item--right">
+              <span class="mono cs-nav-label">Progetto successivo →</span>
+              <span class="cs-nav-title">{next.data.title}</span>
+            </a>
+          ) : <div />}
+        </div>
+        <div class="cs-back">
+          <a href="/projects" class="mono">← Tutti i progetti</a>
+        </div>
+      </div>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .case-study { padding: 48px 0 40px; }
+
+  /* Breadcrumb */
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 64px;
+    flex-wrap: wrap;
+  }
+  .breadcrumb a { color: var(--text-secondary); transition: color var(--transition); }
+  .breadcrumb a:hover { color: var(--accent); }
+  .crumb-sep { color: var(--text-tertiary); }
+  .crumb-current { color: var(--text); }
+
+  /* Header */
+  .cs-header {
+    max-width: var(--content-width);
+    margin-bottom: 80px;
+  }
+
+  .cs-meta {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 32px;
+  }
+  .cs-meta .mono { color: var(--text-secondary); }
+  .cs-nda {
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 2px 8px;
+    font-size: 9px;
+  }
+
+  .cs-title {
+    font-size: clamp(48px, 8vw, 120px);
+    margin-bottom: 32px;
+    color: var(--text);
+  }
+
+  .cs-desc {
+    font-size: 22px;
+    line-height: 1.5;
+    color: var(--text-secondary);
+    max-width: var(--content-width);
+  }
+
+  /* Cover */
+  .cs-cover { margin-bottom: 96px; }
+  .cs-cover img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--border);
+  }
+
+  /* SEZIONI */
+  .cs-section {
+    margin-bottom: 96px;
+  }
+
+  .cs-section-title {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: clamp(40px, 5vw, 64px);
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    line-height: 1;
+    margin: 0 0 2rem;
+    max-width: var(--content-width);
+    color: var(--text);
+  }
+
+  /* SEZIONE RISULTATO — enfasi visiva: testo più grande, dot rosso decorativo */
+  .cs-section[id="risultato"] .cs-section-title {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 20px;
+  }
+
+  .cs-section[id="risultato"] .cs-section-title::after {
+    content: '';
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    background: var(--accent);
+    border-radius: 50%;
+    align-self: center;
+  }
+
+  .cs-section[id="risultato"] .prose :global(p) {
+    font-size: clamp(20px, 2vw, 26px);
+    line-height: 1.5;
+    color: var(--text);
+    font-weight: 400;
+  }
+
+  .cs-section[id="risultato"] .prose :global(strong) {
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  /* PROSE — testo a --content-width (~95% del container) */
+  .prose {
+    width: 100%;
+    color: var(--text);
+    font-size: 20px;
+    line-height: 1.6;
+  }
+
+  .prose :global(h2),
+  .prose :global(h3),
+  .prose :global(p),
+  .prose :global(ul),
+  .prose :global(ol),
+  .prose :global(blockquote) {
+    max-width: var(--content-width);
+  }
+
+  .prose :global(h3) {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 500;
+    font-size: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    margin: 2rem 0 1rem;
+  }
+
+  .prose :global(p) { margin-bottom: 1.25rem; }
+
+  .prose :global(ul) {
+    margin-bottom: 1.5rem;
+    padding-left: 0;
+    list-style: none;
+  }
+
+  .prose :global(ul li) {
+    position: relative;
+    padding-left: 24px;
+    margin-bottom: 0.75rem;
+  }
+
+  .prose :global(ul li::before) {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 8px;
+    height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+  }
+
+  .prose :global(strong) { font-weight: 700; color: var(--text); }
+
+  .prose :global(a) {
+    color: var(--text);
+    border-bottom: 1px solid var(--text);
+    padding-bottom: 1px;
+  }
+  .prose :global(a:hover) { color: var(--accent); border-color: var(--accent); }
+
+  /* IMMAGINI dentro sezione — griglia 2 colonne per accostare immagini,
+     stessa dimensione e proporzione delle card in /projects */
+  .cs-images {
+    margin: 48px 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 48px;
+  }
+
+  .cs-figure {
+    margin: 0;
+    width: 100%;
+  }
+
+  .cs-figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  /* Placeholder — stessa dimensione e colore delle cover in homepage (4:3, surface) */
+  .cs-placeholder {
+    aspect-ratio: 4 / 3;
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+  }
+
+  .cs-figure figcaption {
+    margin-top: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    max-width: var(--content-width);
+    line-height: 1.5;
+  }
+
+  /* Link esterno */
+  .cs-link-wrap { margin: 64px 0; }
+  .cs-link {
+    color: var(--text);
+    border-bottom: 1px solid var(--text);
+    padding-bottom: 2px;
+    transition: color var(--transition), border-color var(--transition);
+    font-weight: 600;
+  }
+  .cs-link:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* Prev/Next navigation */
+  .cs-footer-nav {
+    margin-top: 96px;
+    padding-top: 48px;
+    border-top: 1px solid var(--border);
+  }
+
+  .cs-nav-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    margin-bottom: 48px;
+  }
+
+  .cs-nav-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    color: var(--text);
+    transition: color var(--transition);
+  }
+
+  .cs-nav-item--right { text-align: right; align-items: flex-end; }
+  .cs-nav-item:hover { color: var(--accent); }
+  .cs-nav-label { color: var(--text-secondary); }
+  .cs-nav-title {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 500;
+    font-size: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+
+  .cs-back {
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+  .cs-back a { color: var(--text-secondary); transition: color var(--transition); }
+  .cs-back a:hover { color: var(--accent); }
+
+  @media (max-width: 900px) {
+    .cs-title { font-size: clamp(36px, 10vw, 72px); }
+    .cs-desc { font-size: 18px; }
+    .cs-section { margin-bottom: 48px; }
+    .cs-images { grid-template-columns: 1fr; gap: 32px; margin: 32px 0; }
+    .cs-nav-row { grid-template-columns: 1fr; gap: 24px; }
+    .cs-nav-item--right { text-align: left; align-items: flex-start; }
+  }
+</style>

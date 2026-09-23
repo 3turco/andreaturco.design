@@ -1,0 +1,325 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+// One-page mode (EN): all English projects, non-clickable cards.
+// Detail pages /projects/[slug] exist in code but are not linked.
+const allWork = await getCollection('work', ({ data, id }) => !data.draft && id.startsWith('en/'));
+const featured = allWork.sort((a, b) => b.data.year - a.data.year);
+
+// Brands I've worked for — grouped by sector
+const sectors = [
+  {
+    label: 'Government & Defense',
+    clients: ['Italian Ministry of Defense', 'MBDA', 'NATO', 'ISTAT', 'Roma Capitale', 'ENAV', 'ENAC'],
+  },
+  {
+    label: 'Enterprise & Tech',
+    clients: ['Microsoft', 'ABB', 'Würth', 'HTML.it'],
+  },
+  {
+    label: 'Mobility & Transport',
+    clients: ['Alitalia', 'Ford', 'Range Rover', 'Europcar'],
+  },
+  {
+    label: 'Luxury & Food',
+    clients: ['Ferragamo', 'Coldiretti'],
+  },
+  {
+    label: 'Gaming & Finance',
+    clients: ['Sisal', 'Admiral', 'William Hill', 'Intralot'],
+  },
+];
+---
+
+<BaseLayout
+  title="Andrea Turco"
+  description="Product Digital Designer. Head of Design at Fabaris (S3K group). Twenty years of experience across enterprise, public administration, and industry."
+  lang="en"
+>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container">
+      <p class="hero-meta mono">
+        <span class="hero-meta-dot"></span>
+        Rome, Italy
+      </p>
+      <h1 class="hero-title display">Andrea<br />Turco</h1>
+      <p class="hero-subtitle">Product Digital Designer</p>
+      <p class="hero-tagline">
+        Enterprise, public administration, industry. Twenty years of experience.
+      </p>
+    </div>
+  </section>
+
+  <!-- 01 — SELECTED PROJECTS -->
+  <section class="block" id="work">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <p class="mono section-label">01 — Selected Projects</p>
+          <h2 class="section-title display">Selected Projects</h2>
+        </div>
+      </div>
+
+      {featured.length > 0 ? (
+        <div class="work-grid">
+          {featured.map((p) => (
+            <article class="work-card">
+              <div class="work-cover">
+                {p.data.cover ? (
+                  <img src={p.data.cover} alt={p.data.title} />
+                ) : (
+                  <span class="work-cover-shape">{p.data.client?.substring(0, 2).toUpperCase() ?? '·'}</span>
+                )}
+              </div>
+              <div class="work-meta">
+                {p.data.client && <span class="mono work-client">{p.data.client}</span>}
+                {p.data.nda && <span class="mono work-nda">NDA</span>}
+              </div>
+              <h3 class="work-title">{p.data.title.split('·').slice(-1)[0].trim()}</h3>
+              <p class="work-desc">{p.data.description}</p>
+              <div class="work-tags">
+                {p.data.tags.slice(0, 3).map((t: string) => <span class="work-tag">{t}</span>)}
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <p class="empty">No projects published yet.</p>
+      )}
+    </div>
+  </section>
+
+  <!-- 02 — ABOUT -->
+  <section class="block" id="about">
+    <div class="container">
+      <div class="about-snippet">
+        <div class="about-photo">
+          <img src="/andrea-photo-bw.jpg" alt="Andrea Turco" />
+        </div>
+        <div class="about-text">
+          <p class="mono section-label">02 — About</p>
+          <h2 class="about-title">I'm Andrea.</h2>
+          <p>
+            Product Digital Designer based in Rome, Head of Design at Fabaris (S3K group) since 2012. I've been designing digital products for over twenty years.
+          </p>
+          <p>
+            I've worked across different sectors — from public administration to industry, from luxury to gaming. Clients include the Italian Ministry of Defense, MBDA, NATO, Microsoft, Ford, Ferragamo, Sisal.
+          </p>
+          <p>
+            My experience covers product design, design systems, accessibility (WCAG, AGID, EAA), and team leadership in Agile environments. I focus on the essence of the product, not just theory and literature.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 — BRANDS -->
+  <section class="block" id="clients">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <p class="mono section-label">03 — Brands</p>
+          <h2 class="section-title display">I've worked for</h2>
+        </div>
+      </div>
+
+      <div class="clients-sectors">
+        {sectors.map((s) => (
+          <div class="client-sector">
+            <p class="mono client-sector-label">{s.label}</p>
+            <ul>
+              {s.clients.map((c) => <li>{c}</li>)}
+            </ul>
+          </div>
+        ))}
+      </div>
+
+      <div class="clients-stats">
+        <div class="clients-stat">
+          <span class="clients-stat-number">21</span>
+          <span class="mono clients-stat-label">Selected brands</span>
+        </div>
+        <div class="clients-stat">
+          <span class="clients-stat-number">5</span>
+          <span class="mono clients-stat-label">Sectors</span>
+        </div>
+        <div class="clients-stat">
+          <span class="clients-stat-number">20+</span>
+          <span class="mono clients-stat-label">Years of practice</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 — CTA -->
+  <section class="cta" id="contact">
+    <div class="container">
+      <p class="mono cta-label">04 — Get in touch</p>
+      <h2 class="cta-title display">
+        Let's stay in<br />touch<span class="cta-dot"></span>
+      </h2>
+      <a href="mailto:hello@andreaturco.design" class="cta-email">hello@andreaturco.design</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* Hero */
+  .hero { padding: 120px 0 80px; }
+  .hero-meta {
+    display: flex; align-items: center; gap: 16px;
+    color: var(--text-secondary); margin-bottom: 40px;
+  }
+  .hero-meta-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; }
+  .hero-title { font-size: clamp(72px, 16vw, 220px); margin-bottom: 24px; }
+  .hero-subtitle {
+    font-family: 'Oswald', sans-serif;
+    font-size: 22px; font-weight: 500;
+    color: var(--text); margin-bottom: 16px; max-width: 720px;
+  }
+  .hero-tagline {
+    font-size: 20px; color: var(--text-secondary);
+    max-width: 720px; line-height: 1.5;
+  }
+
+  /* Section base */
+  section.block { padding: 120px 0; border-top: 1px solid var(--border); }
+  .section-head {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    margin-bottom: 64px;
+  }
+  .section-label { color: var(--accent); margin-bottom: 8px; }
+  .section-title { font-size: clamp(48px, 7vw, 96px); }
+
+  /* Work grid */
+  .work-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 48px; }
+  .work-card { display: block; }
+  .work-cover {
+    aspect-ratio: 4 / 3; background: var(--surface);
+    margin-bottom: 20px; overflow: hidden; position: relative;
+    transition: background var(--transition);
+  }
+  .work-cover img { width: 100%; height: 100%; object-fit: cover; }
+  .work-cover-shape {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Oswald', sans-serif; font-weight: 500;
+    font-size: 96px; color: var(--text-tertiary); opacity: 0.3;
+  }
+  .work-meta { display: flex; gap: 16px; align-items: center; margin-bottom: 8px; }
+  .work-client { color: var(--text-secondary); }
+  .work-nda {
+    color: var(--accent); border: 1px solid var(--accent);
+    padding: 2px 8px; font-size: 9px;
+  }
+  .work-title {
+    font-family: 'Oswald', sans-serif; font-weight: 500;
+    font-size: 36px; line-height: 1; text-transform: uppercase;
+    letter-spacing: 0.01em; margin-bottom: 12px; color: var(--text);
+  }
+  .work-desc {
+    color: var(--text-secondary); font-size: 15px;
+    line-height: 1.5; margin-bottom: 16px;
+  }
+  .work-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+  .work-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 4px 10px; border: 1px solid var(--border);
+    color: var(--text-secondary);
+  }
+  .empty { color: var(--text-secondary); }
+
+  /* About */
+  .about-snippet {
+    display: grid; grid-template-columns: 280px 1fr;
+    gap: 64px; align-items: center;
+  }
+  .about-photo {
+    aspect-ratio: 1; background: var(--surface);
+    border-radius: 50%; position: relative; overflow: hidden;
+  }
+  .about-photo img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+    filter: grayscale(100%) contrast(1.02);
+  }
+  .about-title {
+    font-family: 'Oswald', sans-serif; font-weight: 500;
+    font-size: clamp(36px, 5vw, 56px); line-height: 1;
+    margin: 8px 0 24px; text-transform: uppercase; color: var(--text);
+  }
+  .about-text p {
+    color: var(--text-secondary); font-size: 20px;
+    line-height: 1.6; margin-bottom: 24px; max-width: 640px;
+  }
+
+  /* Clients */
+  .clients-sectors {
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    gap: 48px; margin-top: 16px;
+  }
+  .client-sector { display: flex; flex-direction: column; gap: 16px; }
+  .client-sector-label {
+    color: var(--accent); padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .client-sector ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .client-sector li {
+    font-family: 'Oswald', sans-serif; font-weight: 500;
+    font-size: 18px; text-transform: uppercase; letter-spacing: 0.02em;
+    color: var(--text); transition: color var(--transition); cursor: default;
+  }
+  .client-sector li:hover { color: var(--accent); }
+  .clients-stats {
+    display: flex; gap: 48px; margin-top: 80px; padding-top: 48px;
+    border-top: 1px solid var(--border);
+  }
+  .clients-stat { display: flex; flex-direction: column; gap: 8px; }
+  .clients-stat-number {
+    font-family: 'Oswald', sans-serif; font-weight: 600;
+    font-size: clamp(48px, 6vw, 72px); line-height: 1; color: var(--text);
+  }
+  .clients-stat-label { color: var(--text-secondary); }
+
+  /* CTA */
+  .cta {
+    padding: 160px 0; text-align: center;
+    border-top: 1px solid var(--border);
+  }
+  .cta-label { color: var(--text-secondary); margin-bottom: 32px; }
+  .cta-title {
+    font-size: clamp(56px, 11vw, 160px); margin-bottom: 48px;
+    display: flex; align-items: center; justify-content: center;
+    flex-wrap: wrap; gap: 20px;
+  }
+  .cta-dot {
+    display: inline-block;
+    width: clamp(24px, 4vw, 56px); height: clamp(24px, 4vw, 56px);
+    background: var(--accent); border-radius: 50%;
+    margin-left: 12px; vertical-align: middle;
+  }
+  .cta-email {
+    font-family: 'Oswald', sans-serif; font-weight: 500;
+    font-size: clamp(28px, 4vw, 48px); letter-spacing: -0.01em;
+    border-bottom: 2px solid var(--text); padding-bottom: 8px;
+    transition: all var(--transition);
+  }
+  .cta-email:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .hero { padding: 64px 0 48px; }
+    section.block { padding: 80px 0; }
+    .section-head {
+      flex-direction: column; align-items: flex-start;
+      gap: 24px; margin-bottom: 40px;
+    }
+    .work-grid { grid-template-columns: 1fr; gap: 48px; }
+    .about-snippet { grid-template-columns: 1fr; gap: 40px; }
+    .about-photo { max-width: 200px; }
+    .clients-sectors { grid-template-columns: repeat(2, 1fr); gap: 32px; }
+    .clients-stats { gap: 24px; margin-top: 48px; padding-top: 32px; flex-wrap: wrap; }
+  }
+</style>

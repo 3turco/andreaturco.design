@@ -1,43 +1,7 @@
 ---
-interface Props {
-  title: string;
-  description: string;
-  date: Date;
-  slug: string;
-  tags?: string[];
-}
-
-const { title, description, date, slug, tags = [] } = Astro.props;
-
-const formattedDate = date.toLocaleDateString('it-IT', {
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric',
-});
+// Component deprecato — sostituito quando riattiveremo il journal.
+// Mantenuto come no-op per non rompere eventuali import residui.
+interface Props { [key: string]: unknown }
+const _props = Astro.props;
 ---
-
-<article>
-  <a
-    href={`/blog/${slug}`}
-    class="group block py-6 border-b"
-    style="border-color: var(--border);"
-    aria-label={`Leggi l'articolo: ${title}`}
-  >
-    <div class="flex items-baseline justify-between gap-4 mb-1">
-      <h2
-        class="font-serif text-xl transition-opacity group-hover:opacity-60"
-        style="font-family: 'Fraunces', Georgia, serif; font-weight: 400; color: var(--fg);"
-      >
-        {title}
-      </h2>
-      <time
-        datetime={date.toISOString()}
-        class="text-sm tabular-nums shrink-0"
-        style="color: var(--fg-soft);"
-      >
-        {formattedDate}
-      </time>
-    </div>
-    <p class="text-sm leading-relaxed" style="color: var(--fg-soft);">{description}</p>
-  </a>
-</article>
+<span data-deprecated="ArticleCard" style="display:none"></span>

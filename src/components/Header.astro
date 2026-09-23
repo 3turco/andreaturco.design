@@ -1,98 +1,446 @@
 ---
-const nav = [
-  { label: 'Progetti', href: '/progetti' },
-  { label: 'About', href: '/about' },
-  { label: 'Contatti', href: '/contatti' },
-];
+interface Props {
+  lang?: 'it' | 'en';
+}
+const { lang = 'it' } = Astro.props;
+
+const isIt = lang === 'it';
+const homeHref = isIt ? '/' : '/en/';
+const projectsHref = isIt ? '/projects' : '/en/projects';
 
 const currentPath = Astro.url.pathname;
+const isHome = currentPath === homeHref || currentPath === '/en';
+
+// Sitemap:
+//   /                 Home (one-page con sezioni #work, #about, #clients, #contact)
+//   /projects         Elenco progetti
+//   /projects/:slug   Dettaglio progetto
+//
+// Rendo sempre 4 voci di nav — così la posizione di "Projects" resta identica
+// tra le pagine. Su non-home le altre 3 sono invisibili (visibility+opacity)
+// con un fade che si integra alle View Transitions.
+const nav = [
+  { label: 'Projects', href: isHome ? `${homeHref}#work` : projectsHref, hidden: false },
+  { label: 'About', href: `${homeHref}#about`, hidden: !isHome },
+  { label: 'Brands', href: `${homeHref}#clients`, hidden: !isHome },
+  { label: 'Contact', href: `${homeHref}#contact`, hidden: !isHome },
+];
+
+const cvHref = isIt ? '/cv-andrea-turco.pdf' : '/cv-andrea-turco.pdf';
+
+// Un link è "attivo" (pallino rosso) se rappresenta la sezione corrente del sito.
+// Regola:
+// 1) Link con fragment (#) → attivi solo via scroll-spy JS, mai qui in server
+// 2) Link home → attivo solo su match esatto
+// 3) Altri link → attivi se currentPath inizia col loro href (per sotto-pagine)
+function isActive(href: string, currentPath: string, homeHref: string): boolean {
+  if (href.includes('#')) return false;
+  if (href === homeHref) return currentPath === homeHref;
+  return currentPath.startsWith(href);
+}
 ---
 
-<header
-  class="sticky top-0 z-50 border-b"
-  style="background-color: var(--bg); border-color: var(--border);"
-  transition:persist
->
-  <div class="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
-    <!-- Logo -->
-    <a
-      href="/"
-      class="font-serif text-lg tracking-tight transition-opacity hover:opacity-60"
-      style="color: var(--fg); font-family: 'Fraunces', Georgia, serif; font-weight: 400;"
-      aria-label="Andrea Turco — Home"
-    >
-      AT
+<header transition:persist>
+  <div class="container header-inner">
+    <a href={homeHref} class="logo" aria-label="Andrea Turco — Home">
+      <img src="/kamon.svg" alt="Andrea Turco" class="logo-img" width="96" height="96" />
     </a>
 
-    <!-- Nav -->
     <nav aria-label="Navigazione principale">
-      <ul class="flex items-center gap-6 text-sm" style="color: var(--fg-soft);">
-        {nav.map(({ label, href }) => (
-          <li>
-            <a
-              href={href}
-              class="transition-colors hover:opacity-100"
-              style={`color: ${currentPath.startsWith(href) ? 'var(--fg)' : 'var(--fg-soft)'}; font-weight: ${currentPath.startsWith(href) ? '500' : '400'};`}
-              aria-current={currentPath.startsWith(href) ? 'page' : undefined}
-            >
+      <ul>
+        {nav.map(({ label, href, hidden }) => (
+          <li class:list={[hidden && 'is-hidden']} aria-hidden={hidden ? 'true' : undefined}>
+            <a href={href} class:list={[isActive(href, currentPath, homeHref) ? 'active' : '']} tabindex={hidden ? -1 : undefined}>
               {label}
             </a>
           </li>
         ))}
-
-        <!-- CV -->
-        <li>
-          <a
-            href="/cv-andrea-turco.pdf"
-            class="text-sm border px-3 py-1 transition-opacity hover:opacity-60"
-            style="border-color: var(--border); color: var(--fg);"
-            download
-            aria-label="Scarica il CV di Andrea Turco in PDF"
-          >
-            CV
-          </a>
-        </li>
-
-        <!-- Dark mode toggle -->
-        <li>
-          <button
-            id="theme-toggle"
-            aria-label="Cambia tema chiaro/scuro"
-            class="w-8 h-8 flex items-center justify-center transition-opacity hover:opacity-60"
-            style="color: var(--fg-soft);"
-          >
-            <span id="icon-light" aria-hidden="true">☀</span>
-            <span id="icon-dark" aria-hidden="true" class="hidden">☾</span>
-          </button>
-        </li>
       </ul>
     </nav>
+
+    <div class="header-actions">
+      <div class="lang-switch">
+        <a href="/" class={isIt ? 'active' : ''} aria-label="Italiano">IT</a>
+        <span class="lang-divider">/</span>
+        <a href="/en/" class={!isIt ? 'active' : ''} aria-label="English">EN</a>
+      </div>
+
+      <button class="theme-toggle" id="theme-toggle" aria-label="Cambia tema chiaro/scuro">
+        <svg id="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
+        </svg>
+        <svg id="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+      </button>
+
+      <a href={cvHref} class="cv-button" download>{isIt ? 'Scarica CV' : 'Download CV'}</a>
+    </div>
   </div>
 </header>
 
+<style>
+  header {
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 100;
+    transition: background var(--transition), box-shadow var(--transition);
+  }
+
+  header.scrolled {
+    box-shadow: 0 1px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  :global([data-theme="dark"]) header.scrolled {
+    box-shadow: 0 1px 16px rgba(0, 0, 0, 0.5);
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 120px;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    color: var(--text);
+    transition: color var(--transition);
+  }
+
+  .logo-img {
+    display: block;
+    width: 96px;
+    height: 96px;
+    transition: filter var(--transition);
+  }
+
+  :global([data-theme="dark"]) .logo-img {
+    filter: invert(1);
+  }
+
+  .logo:hover .logo-img {
+    filter: invert(28%) sepia(98%) saturate(2453%) hue-rotate(346deg) brightness(89%) contrast(91%);
+  }
+
+  :global([data-theme="dark"]) .logo:hover .logo-img {
+    filter: invert(28%) sepia(98%) saturate(2453%) hue-rotate(346deg) brightness(89%) contrast(91%);
+  }
+
+  nav ul {
+    display: flex;
+    gap: 36px;
+    list-style: none;
+  }
+
+  nav li {
+    transition: opacity 0.35s ease, visibility 0s linear 0s;
+  }
+
+  nav li.is-hidden {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0s linear 0.25s;
+    pointer-events: none;
+  }
+
+  nav a {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    position: relative;
+  }
+
+  nav a:hover { color: var(--text); }
+  nav a.active { color: var(--text); }
+
+  /* Niente underline standard: usiamo l'animazione ::after */
+  nav a:hover,
+  nav a.active:hover {
+    text-decoration: none;
+  }
+
+  /* Elemento animato sotto ogni voce di nav.
+     - Base:         invisibile (width 0)
+     - Hover:        linea di larghezza testo (nasce dal centro, si espande)
+     - Active:       puntino rosso (4×4, tondo)
+     - Active+hover: linea (il puntino si stira) */
+  nav a::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 2px;
+    background: var(--accent);
+    border-radius: 0;
+    transition:
+      width 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+      height 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+      border-radius 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Hover su voce non-attiva: la linea nasce dal centro e si espande */
+  nav a:hover::after {
+    width: 100%;
+    height: 2px;
+    border-radius: 0;
+  }
+
+  /* Voce attiva: puntino rosso persistente */
+  nav a.active::after {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+  }
+
+  /* Voce attiva al hover: il puntino si stira in linea */
+  nav a.active:hover::after {
+    width: 100%;
+    height: 2px;
+    border-radius: 0;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .lang-switch {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .lang-switch a {
+    color: var(--text-tertiary);
+    padding: 4px 6px;
+    transition: color var(--transition);
+  }
+
+  .lang-switch a.active,
+  .lang-switch a:hover {
+    color: var(--text);
+  }
+
+  .lang-divider {
+    color: var(--text-tertiary);
+  }
+
+  .theme-toggle {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text);
+    transition: all var(--transition);
+  }
+
+  .theme-toggle:hover {
+    border-color: var(--text);
+  }
+
+  .cv-button {
+    font-size: 14px;
+    font-weight: 600;
+    padding: 11px 20px;
+    border: 1px solid var(--text);
+    background: var(--text);
+    color: var(--bg);
+    cursor: pointer;
+    transition: all var(--transition);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .cv-button:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #FFFFFF;
+  }
+
+  @media (max-width: 900px) {
+    .header-inner { height: 96px; }
+    .logo-img { width: 72px; height: 72px; }
+    nav { display: none; }
+    .cv-button { display: none; }
+    .header-actions { gap: 12px; }
+  }
+</style>
+
 <script>
   function initThemeToggle() {
-    const btn = document.getElementById('theme-toggle');
-    const iconLight = document.getElementById('icon-light');
-    const iconDark = document.getElementById('icon-dark');
-    if (!btn || !iconLight || !iconDark) return;
+    const btn = document.getElementById('theme-toggle') as HTMLButtonElement | null;
+    const iconSun = document.getElementById('icon-sun') as HTMLElement | null;
+    const iconMoon = document.getElementById('icon-moon') as HTMLElement | null;
+    if (!btn || !iconSun || !iconMoon) return;
 
     function syncIcons() {
-      const isDark = document.documentElement.classList.contains('dark');
-      iconLight.classList.toggle('hidden', isDark);
-      iconDark.classList.toggle('hidden', !isDark);
+      const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+      if (iconSun) iconSun.style.display = isDark ? 'block' : 'none';
+      if (iconMoon) iconMoon.style.display = isDark ? 'none' : 'block';
     }
 
     syncIcons();
 
     btn.addEventListener('click', () => {
-      const isDark = document.documentElement.classList.contains('dark');
-      document.documentElement.classList.toggle('dark', !isDark);
-      localStorage.setItem('theme', isDark ? 'light' : 'dark');
+      const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+      const next = isDark ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      try { localStorage.setItem('theme', next); } catch (e) {}
       syncIcons();
     });
   }
 
   initThemeToggle();
   document.addEventListener('astro:after-swap', initThemeToggle);
+
+  // Scroll-spy per link con fragment (#) sulla homepage — usa IntersectionObserver.
+  // Aggiunge la classe .active al link corrispondente alla sezione in vista.
+  let scrollObserver: IntersectionObserver | null = null;
+  const clickHandlers = new WeakMap<HTMLAnchorElement, EventListener>();
+
+  function initScrollSpy() {
+    // Pulisci osservatore/click precedenti (in caso di re-init dopo swap)
+    if (scrollObserver) scrollObserver.disconnect();
+
+    const path = window.location.pathname;
+    const isHome = path === '/' || path === '/en/' || path === '/en';
+    if (!isHome) return;
+
+    const sections = Array.from(document.querySelectorAll<HTMLElement>('section[id]'));
+    if (!sections.length) return;
+
+    const fragmentLinks = Array.from(
+      document.querySelectorAll<HTMLAnchorElement>('nav a[href*="#"]')
+    );
+    if (!fragmentLinks.length) return;
+
+    const setActive = (id: string) => {
+      for (const link of fragmentLinks) {
+        const href = link.getAttribute('href') ?? '';
+        link.classList.toggle('active', href.endsWith('#' + id));
+      }
+    };
+
+    // Feedback immediato al click: attiva subito il link cliccato
+    for (const link of fragmentLinks) {
+      const prev = clickHandlers.get(link);
+      if (prev) link.removeEventListener('click', prev);
+      const handler: EventListener = () => {
+        const href = link.getAttribute('href') ?? '';
+        const targetId = href.split('#')[1] || '';
+        if (targetId) setActive(targetId);
+      };
+      link.addEventListener('click', handler);
+      clickHandlers.set(link, handler);
+    }
+
+    const clearActive = () => {
+      for (const link of fragmentLinks) link.classList.remove('active');
+    };
+
+    // IntersectionObserver: sezione con la maggiore area visibile è quella "attiva".
+    // Se nessuna sezione è in vista (es. utente in hero, top pagina) il pallino sparisce.
+    let visibleMap = new Map<string, number>();
+    scrollObserver = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) visibleMap.set(e.target.id, e.intersectionRatio);
+          else visibleMap.delete(e.target.id);
+        }
+        if (visibleMap.size === 0) {
+          clearActive();
+          return;
+        }
+        // Trova la sezione con la maggiore area visibile
+        let bestId = '';
+        let bestRatio = 0;
+        for (const [id, ratio] of visibleMap) {
+          if (ratio > bestRatio) {
+            bestRatio = ratio;
+            bestId = id;
+          }
+        }
+        if (bestId) setActive(bestId);
+        else clearActive();
+      },
+      { rootMargin: '-30% 0px -30% 0px', threshold: [0, 0.1, 0.25, 0.5, 0.75, 1] }
+    );
+
+    for (const sec of sections) scrollObserver.observe(sec);
+  }
+
+  initScrollSpy();
+  document.addEventListener('astro:after-swap', initScrollSpy);
+
+  // Aggiorna la nav in base al path corrente:
+  // - Sulla home: 4 voci visibili, Projects → #work (scroll)
+  // - Altrove: solo Projects visibile, Projects → /projects (naviga)
+  // Il fade è gestito dalla transizione CSS su `.is-hidden`.
+  function updateNav() {
+    const nav = document.querySelector('header nav');
+    if (!nav) return;
+    const path = window.location.pathname;
+    const isHomePath = path === '/' || path === '/en/' || path === '/en';
+    const isEnPath = path === '/en' || path.startsWith('/en/');
+
+    // Aggiorna lo stato attivo del lang switcher (IT / EN)
+    const langLinks = document.querySelectorAll<HTMLAnchorElement>('.lang-switch a');
+    langLinks.forEach((link) => {
+      const href = link.getAttribute('href') || '';
+      if (href === '/en/' || href === '/en') {
+        link.classList.toggle('active', isEnPath);
+      } else if (href === '/') {
+        link.classList.toggle('active', !isEnPath);
+      }
+    });
+
+    // Aggiorna anche l'attributo lang su <html> per accessibilità/SEO al vol
+    document.documentElement.lang = isEnPath ? 'en' : 'it';
+
+    const items = Array.from(nav.querySelectorAll<HTMLLIElement>('li'));
+    items.forEach((li, i) => {
+      const link = li.querySelector<HTMLAnchorElement>('a');
+      if (!link) return;
+
+      if (i === 0) {
+        // Projects — sempre visibile, href e stato attivo dipendono dal contesto
+        li.classList.remove('is-hidden');
+        li.removeAttribute('aria-hidden');
+        link.removeAttribute('tabindex');
+        link.setAttribute('href', isHomePath ? '/#work' : '/projects');
+        // Attivo (pallino rosso) su /projects e /projects/*
+        link.classList.toggle('active', !isHomePath);
+      } else {
+        // About, Brands, Contact — visibili solo sulla home
+        li.classList.toggle('is-hidden', !isHomePath);
+        // Il loro stato attivo lo gestisce lo scroll-spy sulla home; altrove sempre off
+        if (!isHomePath) link.classList.remove('active');
+        if (isHomePath) {
+          li.removeAttribute('aria-hidden');
+          link.removeAttribute('tabindex');
+        } else {
+          li.setAttribute('aria-hidden', 'true');
+          link.setAttribute('tabindex', '-1');
+        }
+      }
+    });
+  }
+
+  updateNav();
+  document.addEventListener('astro:after-swap', updateNav);
 </script>

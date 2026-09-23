@@ -3,7 +3,7 @@ title: "Sul minimalismo nel design: una difesa"
 description: "Il minimalismo non è assenza di cura — è cura concentrata. Riflessioni su cosa significa davvero togliere invece di aggiungere."
 date: 2024-11-15
 tags: ["Design", "Processo", "Riflessioni"]
-draft: true
+draft: false
 ---
 
 Il minimalismo ha una cattiva reputazione tra certi designer. Lo si accusa di essere pigrizia mascherata da estetica, di essere una scusa per non risolvere problemi complessi. "Il tuo design è minimale perché hai tolto troppo, non perché hai ragionato abbastanza."

@@ -6,8 +6,24 @@ import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
   site: 'https://andreaturco.design',
+  // i18n: italiano default (root path), inglese su /en/
+  i18n: {
+    defaultLocale: 'it',
+    locales: ['it', 'en'],
+    routing: {
+      prefixDefaultLocale: false,
+    },
+  },
   integrations: [
-    sitemap(),
+    sitemap({
+      i18n: {
+        defaultLocale: 'it',
+        locales: {
+          it: 'it-IT',
+          en: 'en-US',
+        },
+      },
+    }),
     mdx(),
   ],
   vite: {

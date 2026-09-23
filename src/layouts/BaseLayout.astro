@@ -10,36 +10,86 @@ interface Props {
   image?: string;
   type?: 'website' | 'article';
   noindex?: boolean;
+  lang?: 'it' | 'en';
 }
 
 const {
   title,
-  description = 'Portfolio di Andrea Turco — designer.',
+  description = 'Product Digital Designer. Head of Design presso Fabaris (S3K group). Vent\'anni di esperienza in enterprise, pubblica amministrazione, industria.',
   image = '/og-default.png',
   type = 'website',
   noindex = false,
+  lang = 'it',
 } = Astro.props;
 
 const siteUrl = 'https://andreaturco.design';
 const canonicalURL = new URL(Astro.url.pathname, siteUrl);
 const ogImage = new URL(image, siteUrl);
 const fullTitle = title === 'Andrea Turco' ? title : `${title} — Andrea Turco`;
+const ogLocale = lang === 'en' ? 'en_US' : 'it_IT';
+
+// hreflang alternate URLs — mappano il path corrente all'equivalente nell'altra lingua.
+// Sitemap bilingue one-page: home IT è "/", home EN è "/en/". Path secondari mantengono struttura.
+const currentPath = Astro.url.pathname;
+const isEnPath = currentPath === '/en' || currentPath.startsWith('/en/');
+const pathWithoutLocale = isEnPath ? currentPath.replace(/^\/en\/?/, '/') : currentPath;
+const itUrl = new URL(pathWithoutLocale === '/' ? '/' : pathWithoutLocale, siteUrl);
+const enUrl = new URL(pathWithoutLocale === '/' ? '/en/' : `/en${pathWithoutLocale}`, siteUrl);
+
+// JSON-LD Person schema — aiuta Google a costruire il knowledge panel di Andrea
+const personSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Andrea Turco',
+  jobTitle: lang === 'en' ? 'Product Digital Designer, Head of Design' : 'Product Digital Designer, Head of Design',
+  worksFor: {
+    '@type': 'Organization',
+    name: 'Fabaris (S3K group)',
+  },
+  url: siteUrl,
+  image: new URL('/andrea-photo-bw.jpg', siteUrl).toString(),
+  sameAs: [
+    'https://www.linkedin.com/in/andreaturco/',
+  ],
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: 'Rome',
+    addressCountry: 'IT',
+  },
+  knowsAbout: [
+    'Product Design',
+    'UX/UI Design',
+    'Design Systems',
+    'Accessibility (WCAG, AGID, EAA)',
+    'Design Leadership',
+    'Agile / Scrum',
+  ],
+  email: 'hello@andreaturco.design',
+};
 ---
 
 <!doctype html>
-<html lang="it">
+<html lang={lang} data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate icon" href="/favicon.ico" />
     <link rel="canonical" href={canonicalURL} />
+
+    <!-- hreflang: pagine equivalenti nelle due lingue -->
+    <link rel="alternate" hreflang="it" href={itUrl} />
+    <link rel="alternate" hreflang="en" href={enUrl} />
+    <link rel="alternate" hreflang="x-default" href={itUrl} />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&family=Inter:wght@300;400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Lato:wght@400;700;900&family=JetBrains+Mono:wght@400;500&display=swap"
     />
 
     <!-- SEO -->
@@ -53,8 +103,12 @@ const fullTitle = title === 'Andrea Turco' ? title : `${title} — Andrea Turco`
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta property="og:site_name" content="Andrea Turco" />
-    <meta property="og:locale" content="it_IT" />
+    <meta property="og:locale" content={ogLocale} />
+    {lang === 'it' && <meta property="og:locale:alternate" content="en_US" />}
+    {lang === 'en' && <meta property="og:locale:alternate" content="it_IT" />}
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
@@ -62,24 +116,49 @@ const fullTitle = title === 'Andrea Turco' ? title : `${title} — Andrea Turco`
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
 
-    <!-- Dark mode: avoid flash -->
+    <!-- JSON-LD structured data (Person) -->
+    <script type="application/ld+json" set:html={JSON.stringify(personSchema)}></script>
+
+    <!-- Tema: dark default, override localStorage se presente. Nessun flash. -->
     <script is:inline>
       (function () {
-        const stored = localStorage.getItem('theme');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        if (stored === 'dark' || (!stored && prefersDark)) {
-          document.documentElement.classList.add('dark');
-        }
+        try {
+          const stored = localStorage.getItem('theme');
+          if (stored === 'light') {
+            document.documentElement.setAttribute('data-theme', 'light');
+          }
+        } catch (e) {}
       })();
     </script>
 
     <ClientRouter />
   </head>
-  <body class="min-h-screen flex flex-col" style="background-color: var(--bg); color: var(--fg);">
-    <Header />
-    <main class="flex-1">
+  <body>
+    <!-- Skip link per keyboard/screen reader users (WCAG 2.1 SC 2.4.1) -->
+    <a href="#main" class="skip-link">
+      {lang === 'en' ? 'Skip to main content' : 'Vai al contenuto principale'}
+    </a>
+
+    <Header lang={lang} />
+    <main id="main">
       <slot />
     </main>
-    <Footer />
+    <Footer lang={lang} />
+
+    <!-- Header scroll shadow -->
+    <script is:inline>
+      function initHeaderScroll() {
+        const headerEl = document.querySelector('header');
+        if (!headerEl) return;
+        const onScroll = () => {
+          if (window.scrollY > 8) headerEl.classList.add('scrolled');
+          else headerEl.classList.remove('scrolled');
+        };
+        onScroll();
+        window.addEventListener('scroll', onScroll, { passive: true });
+      }
+      initHeaderScroll();
+      document.addEventListener('astro:after-swap', initHeaderScroll);
+    </script>
   </body>
 </html>

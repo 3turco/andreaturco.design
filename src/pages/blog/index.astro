@@ -1,40 +1,23 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import ArticleCard from '../../components/ArticleCard.astro';
-import { getCollection } from 'astro:content';
-
-const posts = await getCollection('blog', ({ data }) => !data.draft);
-const sorted = posts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 ---
 
-<BaseLayout
-  title="Blog"
-  description="Riflessioni su design, processo creativo e lavoro digitale."
->
-  <div class="max-w-5xl mx-auto px-6 pt-20 pb-24">
-    <header class="mb-12">
-      <h1
-        class="font-serif text-4xl sm:text-5xl"
-        style="font-family: 'Fraunces', Georgia, serif; font-weight: 300; color: var(--fg);"
-      >
-        Blog
-      </h1>
-    </header>
-
-    {sorted.length > 0 ? (
-      <div class="max-w-2xl">
-        {sorted.map((post) => (
-          <ArticleCard
-            title={post.data.title}
-            description={post.data.description}
-            date={post.data.date}
-            slug={post.id}
-            tags={post.data.tags}
-          />
-        ))}
-      </div>
-    ) : (
-      <p style="color: var(--fg-soft);">Nessun articolo disponibile.</p>
-    )}
-  </div>
+<BaseLayout title="Journal" description="Coming soon">
+  <section class="soon">
+    <div class="container">
+      <p class="mono label">Journal</p>
+      <h1 class="display title">In arrivo.</h1>
+      <p class="lead">Sto lavorando ai primi articoli su design system, accessibilità e leadership di team.</p>
+      <a href="/" class="link">← Torna alla home</a>
+    </div>
+  </section>
 </BaseLayout>
+
+<style>
+  .soon { padding: 120px 0; }
+  .label { color: var(--accent); margin-bottom: 8px; }
+  .title { font-size: clamp(56px, 10vw, 128px); margin-bottom: 32px; }
+  .lead { font-size: 20px; color: var(--text-secondary); max-width: 520px; margin-bottom: 32px; }
+  .link { color: var(--text); border-bottom: 1px solid var(--text); padding-bottom: 2px; font-weight: 600; }
+  .link:hover { color: var(--accent); border-color: var(--accent); }
+</style>
