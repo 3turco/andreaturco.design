@@ -296,6 +296,12 @@ function isActive(href: string, currentPath: string, homeHref: string): boolean 
 
     syncIcons();
 
+    // Guard: l'header è `transition:persist`, quindi il bottone è lo stesso DOM
+    // node tra navigazioni. Se re-inizializziamo, aggiungeremmo listener duplicati
+    // (ogni click toggla N volte → sembra "non funzionare").
+    if (btn.dataset.themeBound === 'true') return;
+    btn.dataset.themeBound = 'true';
+
     btn.addEventListener('click', () => {
       const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
       const next = isDark ? 'light' : 'dark';
