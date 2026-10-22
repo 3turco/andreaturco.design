@@ -68,7 +68,7 @@ const sectors = [
             <article class="work-card">
               <div class="work-cover">
                 {p.data.cover ? (
-                  <img src={p.data.cover} alt={p.data.title} />
+                  <img src={p.data.cover} alt={p.data.coverAlt ?? p.data.title} />
                 ) : (
                   <span class="work-cover-shape">{p.data.client?.substring(0, 2).toUpperCase() ?? '·'}</span>
                 )}
@@ -96,7 +96,7 @@ const sectors = [
     <div class="container">
       <div class="about-snippet">
         <div class="about-photo">
-          <img src="/andrea-photo-bw.jpg" alt="Andrea Turco" />
+          <img src="/andrea-photo-bw.jpg" alt="Black and white portrait of Andrea Turco" />
         </div>
         <div class="about-text">
           <p class="mono section-label">02 — About</p>
@@ -190,7 +190,7 @@ const sectors = [
     display: flex; justify-content: space-between; align-items: flex-end;
     margin-bottom: 64px;
   }
-  .section-label { color: var(--accent); margin-bottom: 8px; }
+  .section-label { color: var(--accent-text); margin-bottom: 8px; }
   .section-title { font-size: clamp(48px, 7vw, 96px); }
 
   /* Work grid */
@@ -211,7 +211,7 @@ const sectors = [
   .work-meta { display: flex; gap: 16px; align-items: center; margin-bottom: 8px; }
   .work-client { color: var(--text-secondary); }
   .work-nda {
-    color: var(--accent); border: 1px solid var(--accent);
+    color: var(--accent-text); border: 1px solid var(--accent);
     padding: 2px 8px; font-size: 9px;
   }
   .work-title {
@@ -262,7 +262,7 @@ const sectors = [
   }
   .client-sector { display: flex; flex-direction: column; gap: 16px; }
   .client-sector-label {
-    color: var(--accent); padding-bottom: 12px;
+    color: var(--accent-text); padding-bottom: 12px;
     border-bottom: 1px solid var(--border);
   }
   .client-sector ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
@@ -271,7 +271,7 @@ const sectors = [
     font-size: 18px; text-transform: uppercase; letter-spacing: 0.02em;
     color: var(--text); transition: color var(--transition); cursor: default;
   }
-  .client-sector li:hover { color: var(--accent); }
+  .client-sector li:hover { color: var(--accent-text); }
   .clients-stats {
     display: flex; gap: 48px; margin-top: 80px; padding-top: 48px;
     border-top: 1px solid var(--border);
@@ -306,7 +306,7 @@ const sectors = [
     border-bottom: 2px solid var(--text); padding-bottom: 8px;
     transition: all var(--transition);
   }
-  .cta-email:hover { color: var(--accent); border-color: var(--accent); }
+  .cta-email:hover { color: var(--accent-text); border-color: var(--accent); }
 
   /* Responsive */
   @media (max-width: 900px) {

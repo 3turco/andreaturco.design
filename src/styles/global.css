@@ -20,9 +20,10 @@
   --surface: #161615;
   --text: #F5F5F4;
   --text-secondary: #A1A1A1;
-  --text-tertiary: #6B6B6B;
+  --text-tertiary: #8A8A8A;   /* 5.7:1 su --bg, 5.3:1 su --surface */
   --border: #2A2A2A;
-  --accent: #DC2626;
+  --accent: #DC2626;          /* decorazioni, bordi, sfondi */
+  --accent-text: #EF4444;     /* rosso per testo piccolo: 5.3:1 su --bg */
 
   color-scheme: dark;
 }
@@ -31,10 +32,11 @@
   --bg: #FFFFFF;
   --surface: #F5F5F4;
   --text: #0A0A0A;
-  --text-secondary: #6B6B6B;
-  --text-tertiary: #A1A1A1;
+  --text-secondary: #595959;  /* 7:1 su --bg */
+  --text-tertiary: #6B6B6B;   /* 5.3:1 su --bg, 4.9:1 su --surface */
   --border: #E5E5E4;
   --accent: #DC2626;
+  --accent-text: #DC2626;     /* 4.8:1 su --bg */
 
   color-scheme: light;
 }
@@ -89,6 +91,19 @@ a {
   top: 16px;
   outline: 2px solid var(--text);
   outline-offset: 2px;
+}
+
+/* Testo solo per screen reader: resta nel nome accessibile dei link e dei pulsanti */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* Focus indicator visibile per navigazione da tastiera */
@@ -245,6 +260,6 @@ a.active:hover {
 }
 
 .prose a:hover {
-  color: var(--accent);
+  color: var(--accent-text);
   border-color: var(--accent);
 }

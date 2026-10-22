@@ -56,7 +56,7 @@ const sectors = [
     <div class="container">
       <div class="section-head">
         <div>
-          <p class="mono section-label">01 — Selected Projects</p>
+          <p class="mono section-label">01 — Progetti</p>
           <h2 class="section-title display">Progetti selezionati</h2>
         </div>
       </div>
@@ -67,7 +67,7 @@ const sectors = [
             <article class="work-card">
               <div class="work-cover">
                 {p.data.cover ? (
-                  <img src={p.data.cover} alt={p.data.title} />
+                  <img src={p.data.cover} alt={p.data.coverAlt ?? p.data.title} />
                 ) : (
                   <span class="work-cover-shape">{p.data.client?.substring(0, 2).toUpperCase() ?? '·'}</span>
                 )}
@@ -95,10 +95,10 @@ const sectors = [
     <div class="container">
       <div class="about-snippet">
         <div class="about-photo">
-          <img src="/andrea-photo-bw.jpg" alt="Andrea Turco" />
+          <img src="/andrea-photo-bw.jpg" alt="Ritratto in bianco e nero di Andrea Turco" />
         </div>
         <div class="about-text">
-          <p class="mono section-label">02 — About</p>
+          <p class="mono section-label">02 — Chi sono</p>
           <h2 class="about-title">Mi chiamo Andrea.</h2>
           <p>
             Product Digital Designer di Roma, Head of Design presso Fabaris (S3K group) dal 2012. Progetto prodotti digitali da oltre vent'anni.
@@ -119,7 +119,7 @@ const sectors = [
     <div class="container">
       <div class="section-head">
         <div>
-          <p class="mono section-label">03 — Brands</p>
+          <p class="mono section-label">03 — Brand</p>
           <h2 class="section-title display">Ho lavorato per</h2>
         </div>
       </div>
@@ -155,7 +155,7 @@ const sectors = [
   <!-- 04 — CTA -->
   <section class="cta" id="contact">
     <div class="container">
-      <p class="mono cta-label">04 — Get in touch</p>
+      <p class="mono cta-label">04 — Contatti</p>
       <h2 class="cta-title display">
         Restiamo in<br />contatto<span class="cta-dot"></span>
       </h2>
@@ -220,7 +220,7 @@ const sectors = [
   }
 
   .section-label {
-    color: var(--accent);
+    color: var(--accent-text);
     margin-bottom: 8px;
   }
 
@@ -237,7 +237,7 @@ const sectors = [
   }
 
   .section-link:hover {
-    color: var(--accent);
+    color: var(--accent-text);
   }
 
   /* Work grid */
@@ -291,7 +291,7 @@ const sectors = [
   }
 
   .work-nda {
-    color: var(--accent);
+    color: var(--accent-text);
     border: 1px solid var(--accent);
     padding: 2px 8px;
     font-size: 9px;
@@ -390,7 +390,7 @@ const sectors = [
   }
 
   .client-sector-label {
-    color: var(--accent);
+    color: var(--accent-text);
     padding-bottom: 12px;
     border-bottom: 1px solid var(--border);
   }
@@ -414,7 +414,7 @@ const sectors = [
   }
 
   .client-sector li:hover {
-    color: var(--accent);
+    color: var(--accent-text);
   }
 
   .clients-stats {
@@ -486,7 +486,7 @@ const sectors = [
   }
 
   .cta-email:hover {
-    color: var(--accent);
+    color: var(--accent-text);
     border-color: var(--accent);
   }
 

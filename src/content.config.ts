@@ -14,6 +14,8 @@ const work = defineCollection({
     tags: z.array(z.string()),
     sector: z.string().optional(),
     cover: z.string().optional(),
+    // Testo alternativo della copertina (descrive l'immagine, non il titolo)
+    coverAlt: z.string().optional(),
     gallery: z.array(z.string()).optional(),
     // Immagini narrative del case study, con caption opzionale e posizione tra sezioni.
     // `after` = nome della sezione markdown (h2) dopo la quale mostrarle. Es. "contesto".

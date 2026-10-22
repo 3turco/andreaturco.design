@@ -67,7 +67,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   }
 
   .ct-block { }
-  .ct-label { color: var(--accent); margin-bottom: 16px; }
+  .ct-label { color: var(--accent-text); margin-bottom: 16px; }
   .ct-email {
     font-family: 'Oswald', sans-serif;
     font-weight: 500;
@@ -78,7 +78,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     transition: color var(--transition), border-color var(--transition);
     display: inline-block;
   }
-  .ct-email:hover { color: var(--accent); border-color: var(--accent); }
+  .ct-email:hover { color: var(--accent-text); border-color: var(--accent); }
 
   .ct-block p, .ct-block a:not(.ct-email) {
     font-size: 18px;
@@ -89,7 +89,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     padding-bottom: 2px;
     transition: color var(--transition), border-color var(--transition);
   }
-  .ct-block a:not(.ct-email):hover { color: var(--accent); border-color: var(--accent); }
+  .ct-block a:not(.ct-email):hover { color: var(--accent-text); border-color: var(--accent); }
 
   @media (max-width: 900px) {
     .ct-grid { grid-template-columns: 1fr; gap: 40px; }

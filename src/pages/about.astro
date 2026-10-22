@@ -15,7 +15,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
       <div class="ap-body">
         <div class="ap-photo">
-          <img src="/andrea-photo-bw.jpg" alt="Andrea Turco" />
+          <img src="/andrea-photo-bw.jpg" alt="Ritratto in bianco e nero di Andrea Turco" />
         </div>
 
         <div class="ap-text">
@@ -85,7 +85,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 <style>
   .about-page { padding: 80px 0 120px; }
   .ap-header { margin-bottom: 64px; }
-  .section-label { color: var(--accent); margin-bottom: 8px; }
+  .section-label { color: var(--accent-text); margin-bottom: 8px; }
   .ap-title { font-size: clamp(56px, 10vw, 128px); }
 
   .ap-body {
@@ -120,7 +120,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     padding-top: 48px;
     border-top: 1px solid var(--border);
   }
-  .ap-meta-label { color: var(--accent); margin-bottom: 12px; }
+  .ap-meta-label { color: var(--accent-text); margin-bottom: 12px; }
   .ap-meta-block ul { list-style: none; }
   .ap-meta-block li { color: var(--text-secondary); font-size: 15px; margin-bottom: 6px; }
 
@@ -134,7 +134,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     padding-bottom: 4px;
     transition: color var(--transition), border-color var(--transition);
   }
-  .ap-cv-link:hover { color: var(--accent); border-color: var(--accent); }
+  .ap-cv-link:hover { color: var(--accent-text); border-color: var(--accent); }
 
   @media (max-width: 900px) {
     .ap-body { grid-template-columns: 1fr; gap: 40px; }

@@ -27,7 +27,7 @@ function slugOf(id: string) {
             <a href={`/projects/${slugOf(p.id)}`} class="work-card">
               <div class="work-cover">
                 {p.data.cover ? (
-                  <img src={p.data.cover} alt={p.data.title} />
+                  <img src={p.data.cover} alt={p.data.coverAlt ?? p.data.title} />
                 ) : (
                   <span class="work-cover-shape">{p.data.client?.substring(0, 2).toUpperCase() ?? '·'}</span>
                 )}
@@ -61,7 +61,7 @@ function slugOf(id: string) {
   }
 
   .section-label {
-    color: var(--accent);
+    color: var(--accent-text);
     margin-bottom: 8px;
   }
 
@@ -100,7 +100,7 @@ function slugOf(id: string) {
 
   .work-meta { display: flex; gap: 16px; align-items: center; margin-bottom: 8px; }
   .work-client { color: var(--text-secondary); }
-  .work-nda { color: var(--accent); border: 1px solid var(--accent); padding: 2px 8px; font-size: 9px; }
+  .work-nda { color: var(--accent-text); border: 1px solid var(--accent); padding: 2px 8px; font-size: 9px; }
   .work-title {
     font-family: 'Oswald', sans-serif; font-weight: 500;
     font-size: 36px; line-height: 1; text-transform: uppercase;

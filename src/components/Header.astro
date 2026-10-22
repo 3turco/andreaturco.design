@@ -20,10 +20,10 @@ const isHome = currentPath === homeHref || currentPath === '/en';
 // tra le pagine. Su non-home le altre 3 sono invisibili (visibility+opacity)
 // con un fade che si integra alle View Transitions.
 const nav = [
-  { label: 'Projects', href: isHome ? `${homeHref}#work` : projectsHref, hidden: false },
-  { label: 'About', href: `${homeHref}#about`, hidden: !isHome },
-  { label: 'Brands', href: `${homeHref}#clients`, hidden: !isHome },
-  { label: 'Contact', href: `${homeHref}#contact`, hidden: !isHome },
+  { label: isIt ? 'Progetti' : 'Projects', href: isHome ? `${homeHref}#work` : projectsHref, hidden: false },
+  { label: isIt ? 'Chi sono' : 'About', href: `${homeHref}#about`, hidden: !isHome },
+  { label: isIt ? 'Brand' : 'Brands', href: `${homeHref}#clients`, hidden: !isHome },
+  { label: isIt ? 'Contatti' : 'Contact', href: `${homeHref}#contact`, hidden: !isHome },
 ];
 
 const cvHref = isIt ? '/cv-andrea-turco.pdf' : '/cv-andrea-turco.pdf';
@@ -43,10 +43,10 @@ function isActive(href: string, currentPath: string, homeHref: string): boolean 
 <header transition:persist>
   <div class="container header-inner">
     <a href={homeHref} class="logo" aria-label="Andrea Turco — Home">
-      <img src="/kamon.svg" alt="Andrea Turco" class="logo-img" width="96" height="96" />
+      <img src="/kamon.svg" alt="" class="logo-img" width="96" height="96" />
     </a>
 
-    <nav aria-label="Navigazione principale">
+    <nav aria-label={isIt ? 'Navigazione principale' : 'Main navigation'}>
       <ul>
         {nav.map(({ label, href, hidden }) => (
           <li class:list={[hidden && 'is-hidden']} aria-hidden={hidden ? 'true' : undefined}>
@@ -60,12 +60,15 @@ function isActive(href: string, currentPath: string, homeHref: string): boolean 
 
     <div class="header-actions">
       <div class="lang-switch">
-        <a href="/" class={isIt ? 'active' : ''} aria-label="Italiano">IT</a>
-        <span class="lang-divider">/</span>
-        <a href="/en/" class={!isIt ? 'active' : ''} aria-label="English">EN</a>
+        <!-- Il nome accessibile inizia con il testo visibile (WCAG 2.5.3).
+             data-astro-reload: l'header è persistente, un cambio lingua ricarica la pagina
+             così etichette e lang restano coerenti. -->
+        <a href="/" class={isIt ? 'active' : ''} lang="it" hreflang="it" aria-label="IT – Italiano" aria-current={isIt ? 'page' : undefined} data-astro-reload>IT</a>
+        <span class="lang-divider" aria-hidden="true">/</span>
+        <a href="/en/" class={!isIt ? 'active' : ''} lang="en" hreflang="en" aria-label="EN – English" aria-current={!isIt ? 'page' : undefined} data-astro-reload>EN</a>
       </div>
 
-      <button class="theme-toggle" id="theme-toggle" aria-label="Cambia tema chiaro/scuro">
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label={isIt ? 'Tema scuro' : 'Dark theme'} aria-pressed="true">
         <svg id="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="4"></circle>
           <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
@@ -75,7 +78,7 @@ function isActive(href: string, currentPath: string, homeHref: string): boolean 
         </svg>
       </button>
 
-      <a href={cvHref} class="cv-button" download>{isIt ? 'Scarica CV' : 'Download CV'}</a>
+      <a href={cvHref} class="cv-button" download>{isIt ? 'Scarica CV' : 'Download CV'}<span class="visually-hidden"> (PDF)</span></a>
     </div>
   </div>
 </header>
@@ -292,6 +295,8 @@ function isActive(href: string, currentPath: string, homeHref: string): boolean 
       const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
       if (iconSun) iconSun.style.display = isDark ? 'block' : 'none';
       if (iconMoon) iconMoon.style.display = isDark ? 'none' : 'block';
+      // Stato annunciato dagli screen reader: premuto = tema scuro attivo
+      btn!.setAttribute('aria-pressed', String(isDark));
     }
 
     syncIcons();
@@ -408,11 +413,10 @@ function isActive(href: string, currentPath: string, homeHref: string): boolean 
     const langLinks = document.querySelectorAll<HTMLAnchorElement>('.lang-switch a');
     langLinks.forEach((link) => {
       const href = link.getAttribute('href') || '';
-      if (href === '/en/' || href === '/en') {
-        link.classList.toggle('active', isEnPath);
-      } else if (href === '/') {
-        link.classList.toggle('active', !isEnPath);
-      }
+      const isCurrent = (href === '/en/' || href === '/en') ? isEnPath : !isEnPath;
+      link.classList.toggle('active', isCurrent);
+      if (isCurrent) link.setAttribute('aria-current', 'page');
+      else link.removeAttribute('aria-current');
     });
 
     // Aggiorna anche l'attributo lang su <html> per accessibilità/SEO al vol
@@ -428,7 +432,8 @@ function isActive(href: string, currentPath: string, homeHref: string): boolean 
         li.classList.remove('is-hidden');
         li.removeAttribute('aria-hidden');
         link.removeAttribute('tabindex');
-        link.setAttribute('href', isHomePath ? '/#work' : '/projects');
+        const prefix = isEnPath ? '/en' : '';
+        link.setAttribute('href', isHomePath ? `${prefix}/#work` : `${prefix}/projects`);
         // Attivo (pallino rosso) su /projects e /projects/*
         link.classList.toggle('active', !isHomePath);
       } else {

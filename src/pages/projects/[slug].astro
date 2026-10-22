@@ -100,7 +100,7 @@ const orphanImages: CaseImage[] = images.filter((img: CaseImage) => !img.after |
       <!-- Cover opzionale -->
       {data.cover && (
         <div class="cs-cover">
-          <img src={data.cover} alt={`Cover del progetto ${data.title}`} loading="eager" decoding="async" />
+          <img src={data.cover} alt={data.coverAlt ?? `Cover del progetto ${data.title}`} loading="eager" decoding="async" />
         </div>
       )}
 
@@ -185,7 +185,7 @@ const orphanImages: CaseImage[] = images.filter((img: CaseImage) => !img.after |
     flex-wrap: wrap;
   }
   .breadcrumb a { color: var(--text-secondary); transition: color var(--transition); }
-  .breadcrumb a:hover { color: var(--accent); }
+  .breadcrumb a:hover { color: var(--accent-text); }
   .crumb-sep { color: var(--text-tertiary); }
   .crumb-current { color: var(--text); }
 
@@ -203,7 +203,7 @@ const orphanImages: CaseImage[] = images.filter((img: CaseImage) => !img.after |
   }
   .cs-meta .mono { color: var(--text-secondary); }
   .cs-nda {
-    color: var(--accent);
+    color: var(--accent-text);
     border: 1px solid var(--accent);
     padding: 2px 8px;
     font-size: 9px;
@@ -274,7 +274,7 @@ const orphanImages: CaseImage[] = images.filter((img: CaseImage) => !img.after |
 
   .cs-section[id="risultato"] .prose :global(strong) {
     font-weight: 700;
-    color: var(--accent);
+    color: var(--accent-text);
   }
 
   /* PROSE — testo a --content-width (~95% del container) */
@@ -335,7 +335,7 @@ const orphanImages: CaseImage[] = images.filter((img: CaseImage) => !img.after |
     border-bottom: 1px solid var(--text);
     padding-bottom: 1px;
   }
-  .prose :global(a:hover) { color: var(--accent); border-color: var(--accent); }
+  .prose :global(a:hover) { color: var(--accent-text); border-color: var(--accent); }
 
   /* IMMAGINI dentro sezione — griglia 2 colonne per accostare immagini,
      stessa dimensione e proporzione delle card in /projects */
@@ -387,7 +387,7 @@ const orphanImages: CaseImage[] = images.filter((img: CaseImage) => !img.after |
     transition: color var(--transition), border-color var(--transition);
     font-weight: 600;
   }
-  .cs-link:hover { color: var(--accent); border-color: var(--accent); }
+  .cs-link:hover { color: var(--accent-text); border-color: var(--accent); }
 
   /* Prev/Next navigation */
   .cs-footer-nav {
@@ -412,7 +412,7 @@ const orphanImages: CaseImage[] = images.filter((img: CaseImage) => !img.after |
   }
 
   .cs-nav-item--right { text-align: right; align-items: flex-end; }
-  .cs-nav-item:hover { color: var(--accent); }
+  .cs-nav-item:hover { color: var(--accent-text); }
   .cs-nav-label { color: var(--text-secondary); }
   .cs-nav-title {
     font-family: 'Oswald', sans-serif;
@@ -427,7 +427,7 @@ const orphanImages: CaseImage[] = images.filter((img: CaseImage) => !img.after |
     border-top: 1px solid var(--border);
   }
   .cs-back a { color: var(--text-secondary); transition: color var(--transition); }
-  .cs-back a:hover { color: var(--accent); }
+  .cs-back a:hover { color: var(--accent-text); }
 
   @media (max-width: 900px) {
     .cs-title { font-size: clamp(36px, 10vw, 72px); }
