@@ -1,9 +1,9 @@
 # Header di sicurezza — Cloudflare Pages applica questo file a ogni risposta.
 # Fonte: report scanner del 2026-10-22 (HSTS, CSP, clickjacking, Permissions-Policy).
 /*
-  # HTTPS obbligato per 6 mesi. Passare a 31536000 dopo un periodo senza problemi.
+  # HTTPS obbligato per 12 mesi (richiesto da Observatory per il punteggio pieno).
   # includeSubDomains e preload: aggiungere solo dopo aver verificato tutti i sottodomini.
-  Strict-Transport-Security: max-age=15552000
+  Strict-Transport-Security: max-age=31536000
 
   # Anti-clickjacking: nessun sito può incorporare la pagina in un iframe.
   X-Frame-Options: DENY
