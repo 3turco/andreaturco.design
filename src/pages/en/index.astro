@@ -3,7 +3,6 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 
 // One-page mode (EN): all English projects, non-clickable cards.
-// Detail pages /projects/[slug] exist in code but are not linked.
 const allWork = await getCollection('work', ({ data, id }) => !data.draft && id.startsWith('en/'));
 const featured = allWork.sort((a, b) => b.data.year - a.data.year);
 

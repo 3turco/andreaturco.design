@@ -3,7 +3,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 
 // One-page mode: mostro TUTTI i progetti italiani, non cliccabili.
-// Le detail pages /projects/[slug] esistono ancora nel codice ma non sono linkate.
 const allWork = await getCollection('work', ({ data, id }) => !data.draft && id.startsWith('it/'));
 const featured = allWork.sort((a, b) => b.data.year - a.data.year);
 

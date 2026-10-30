@@ -6,21 +6,19 @@ const { lang = 'it' } = Astro.props;
 
 const isIt = lang === 'it';
 const homeHref = isIt ? '/' : '/en/';
-const projectsHref = isIt ? '/projects' : '/en/projects';
 
 const currentPath = Astro.url.pathname;
 const isHome = currentPath === homeHref || currentPath === '/en';
 
 // Sitemap:
 //   /                 Home (one-page con sezioni #work, #about, #clients, #contact)
-//   /projects         Elenco progetti
-//   /projects/:slug   Dettaglio progetto
+//   /404              Pagina non trovata
 //
 // Rendo sempre 4 voci di nav — così la posizione di "Projects" resta identica
 // tra le pagine. Su non-home le altre 3 sono invisibili (visibility+opacity)
 // con un fade che si integra alle View Transitions.
 const nav = [
-  { label: isIt ? 'Progetti' : 'Projects', href: isHome ? `${homeHref}#work` : projectsHref, hidden: false },
+  { label: isIt ? 'Progetti' : 'Projects', href: `${homeHref}#work`, hidden: false },
   { label: isIt ? 'Chi sono' : 'About', href: `${homeHref}#about`, hidden: !isHome },
   { label: isIt ? 'Brand' : 'Brands', href: `${homeHref}#clients`, hidden: !isHome },
   { label: isIt ? 'Contatti' : 'Contact', href: `${homeHref}#contact`, hidden: !isHome },
@@ -69,11 +67,11 @@ function isActive(href: string, currentPath: string, homeHref: string): boolean 
       </div>
 
       <button class="theme-toggle" id="theme-toggle" type="button" aria-label={isIt ? 'Tema scuro' : 'Dark theme'} aria-pressed="true">
-        <svg id="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg id="icon-sun" aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="4"></circle>
           <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
         </svg>
-        <svg id="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+        <svg id="icon-moon" aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none">
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
         </svg>
       </button>
@@ -400,7 +398,7 @@ function isActive(href: string, currentPath: string, homeHref: string): boolean 
 
   // Aggiorna la nav in base al path corrente:
   // - Sulla home: 4 voci visibili, Projects → #work (scroll)
-  // - Altrove: solo Projects visibile, Projects → /projects (naviga)
+  // - Altrove: solo Projects visibile, Projects → home#work (naviga)
   // Il fade è gestito dalla transizione CSS su `.is-hidden`.
   function updateNav() {
     const nav = document.querySelector('header nav');
@@ -428,14 +426,13 @@ function isActive(href: string, currentPath: string, homeHref: string): boolean 
       if (!link) return;
 
       if (i === 0) {
-        // Projects — sempre visibile, href e stato attivo dipendono dal contesto
+        // Projects — sempre visibile, porta alla sezione della home
         li.classList.remove('is-hidden');
         li.removeAttribute('aria-hidden');
         link.removeAttribute('tabindex');
         const prefix = isEnPath ? '/en' : '';
-        link.setAttribute('href', isHomePath ? `${prefix}/#work` : `${prefix}/projects`);
-        // Attivo (pallino rosso) su /projects e /projects/*
-        link.classList.toggle('active', !isHomePath);
+        link.setAttribute('href', `${prefix}/#work`);
+        if (!isHomePath) link.classList.remove('active');
       } else {
         // About, Brands, Contact — visibili solo sulla home
         li.classList.toggle('is-hidden', !isHomePath);
