@@ -69,7 +69,7 @@ query($acc: String!, $f: AccountRumPageloadEventsAdaptiveGroupsFilter_InputObjec
     totale: rumPageloadEventsAdaptiveGroups(limit: 1, filter: $f) { count sum { visits } }
     fonti: rumPageloadEventsAdaptiveGroups(limit: 10, filter: $f, orderBy: [sum_visits_DESC]) {
       sum { visits } dimensions { refererHost } }
-    pagine: rumPageloadEventsAdaptiveGroups(limit: 5, filter: $f, orderBy: [count_DESC]) {
+    pagine: rumPageloadEventsAdaptiveGroups(limit: 100, filter: $f, orderBy: [count_DESC]) {
       count dimensions { requestPath } }
   } }
 }
@@ -125,6 +125,9 @@ def main():
     if ora["pagine"]:
         righe.append("Pagine più viste: " + ", ".join(f"{p} ({n})" for p, n in ora["pagine"][:3]))
     testo = "\n".join(righe)
+    if ora["pagine"]:
+        testo += "\n\nTutte le pagine viste:\n" + "\n".join(
+            f"{n:>4}  {p}" for p, n in ora["pagine"])
     print(testo)
 
     if args.notifica:
