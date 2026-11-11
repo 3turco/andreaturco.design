@@ -12,6 +12,39 @@ const year = new Date().getFullYear();
     <div class="footer-left">© {year} Andrea Turco</div>
     <div class="footer-center">
       <a href="https://www.linkedin.com/in/andreaturco/" target="_blank" rel="noopener noreferrer">LinkedIn<span class="visually-hidden">{isIt ? ', profilo di Andrea Turco (si apre in una nuova scheda)' : ", Andrea Turco's profile (opens in a new tab)"}</span></a>
+      <button type="button" class="footer-link" popovertarget="privacy">Privacy</button>
+    </div>
+
+    <!-- Informativa privacy: pannello nativo (popover), niente pagina in più e niente script.
+         Il sito non usa cookie, quindi non serve il banner (linee guida Garante, 10/06/2021). -->
+    <div id="privacy" popover class="privacy" role="dialog" aria-labelledby="privacy-title">
+      <div class="privacy-head">
+        <h2 id="privacy-title" class="privacy-title">{isIt ? 'Privacy' : 'Privacy policy'}</h2>
+        <button type="button" class="privacy-close" popovertarget="privacy" popovertargetaction="hide">
+          {isIt ? 'Chiudi' : 'Close'}
+        </button>
+      </div>
+      {isIt ? (
+        <div class="privacy-body">
+          <p><strong>Titolare.</strong> Andrea Turco, <a href="mailto:hello@andreaturco.design">hello@andreaturco.design</a>.</p>
+          <p><strong>Cookie.</strong> Questo sito non usa cookie e non salva dati nel tuo browser. Per questo non trovi un banner.</p>
+          <p><strong>Statistiche.</strong> Uso Cloudflare Web Analytics per contare visite e pagine viste in forma aggregata. Non usa cookie e non ti riconosce tra una visita e l'altra.</p>
+          <p><strong>Hosting.</strong> Il sito è ospitato da Cloudflare, che tratta i dati tecnici della connessione, come l'indirizzo IP, per far funzionare il sito e proteggerlo. Cloudflare agisce per mio conto e aderisce al Data Privacy Framework UE-USA. Dettagli nella <a href="https://www.cloudflare.com/it-it/privacypolicy/" target="_blank" rel="noopener noreferrer">sua informativa<span class="visually-hidden"> (si apre in una nuova scheda)</span></a>.</p>
+          <p><strong>Perché.</strong> Legittimo interesse a tenere il sito sicuro e a capire come viene usato. Non vendo né cedo dati a nessuno.</p>
+          <p><strong>I tuoi diritti.</strong> Puoi chiedere accesso, cancellazione o opporti al trattamento scrivendo all'indirizzo sopra. Puoi anche presentare reclamo al <a href="https://www.garanteprivacy.it" target="_blank" rel="noopener noreferrer">Garante per la protezione dei dati personali<span class="visually-hidden"> (si apre in una nuova scheda)</span></a>.</p>
+          <p class="privacy-date">Aggiornata a novembre 2026.</p>
+        </div>
+      ) : (
+        <div class="privacy-body">
+          <p><strong>Controller.</strong> Andrea Turco, <a href="mailto:hello@andreaturco.design">hello@andreaturco.design</a>.</p>
+          <p><strong>Cookies.</strong> This site uses no cookies and stores nothing in your browser. That's why there is no banner.</p>
+          <p><strong>Analytics.</strong> I use Cloudflare Web Analytics to count visits and page views in aggregate. It uses no cookies and does not recognise you between visits.</p>
+          <p><strong>Hosting.</strong> The site is hosted by Cloudflare, which processes technical connection data, such as your IP address, to run and protect the site. Cloudflare acts on my behalf and is certified under the EU-US Data Privacy Framework. Details in <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener noreferrer">its privacy policy<span class="visually-hidden"> (opens in a new tab)</span></a>.</p>
+          <p><strong>Why.</strong> Legitimate interest in keeping the site secure and understanding how it is used. I don't sell or share data with anyone.</p>
+          <p><strong>Your rights.</strong> You can request access, erasure or object to processing by writing to the address above. You can also lodge a complaint with the <a href="https://www.garanteprivacy.it/home_en" target="_blank" rel="noopener noreferrer">Italian Data Protection Authority<span class="visually-hidden"> (opens in a new tab)</span></a>.</p>
+          <p class="privacy-date">Last updated November 2026.</p>
+        </div>
+      )}
     </div>
     <div class="footer-right" lang="en">
       Designed &amp; built with
@@ -55,8 +88,93 @@ const year = new Date().getFullYear();
     transition: color var(--transition);
   }
 
-  .footer-center a:hover {
+  .footer-center a:hover,
+  .footer-link:hover {
     color: var(--accent-text);
+  }
+
+  .footer-link {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: color var(--transition);
+  }
+
+  .privacy {
+    width: min(560px, calc(100vw - 32px));
+    max-height: min(80vh, 720px);
+    overflow-y: auto;
+    margin: auto;
+    padding: 28px;
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .privacy::backdrop {
+    background: rgb(0 0 0 / 0.6);
+  }
+
+  .privacy-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .privacy-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 28px;
+    text-transform: uppercase;
+    margin: 0;
+  }
+
+  .privacy-close {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text);
+    background: none;
+    border: 1px solid var(--text);
+    padding: 8px 12px;
+    cursor: pointer;
+  }
+
+  .privacy-close:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #FFFFFF;
+  }
+
+  .privacy-body p {
+    margin: 0 0 12px;
+  }
+
+  .privacy-body a {
+    color: var(--text);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .privacy-date {
+    color: var(--text-secondary);
+    font-size: 13px;
+  }
+
+  @media (max-width: 600px) {
+    .privacy { padding: 20px; }
   }
 
   .footer-right {
