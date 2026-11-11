@@ -1,4 +1,4 @@
-// Genera public/cv-andrea-turco.pdf da cv/cv.html con Chrome senza interfaccia.
+// Genera cv/cv-andrea-turco.pdf da cv/cv.html con Chrome senza interfaccia.
 // Chrome produce un PDF taggato: struttura dei titoli, lingua, testo alternativo,
 // elementi con aria-hidden. Poi cv-pdfua.py lo rifinisce per PDF/UA. Uso: npm run cv
 import { execFileSync } from 'node:child_process';
@@ -17,7 +17,7 @@ if (!chrome) {
 }
 
 const sorgente = pathToFileURL(fileURLToPath(new URL('../cv/cv.html', import.meta.url))).href;
-const destinazione = fileURLToPath(new URL('../public/cv-andrea-turco.pdf', import.meta.url));
+const destinazione = fileURLToPath(new URL('../cv/cv-andrea-turco.pdf', import.meta.url));
 
 execFileSync(chrome, [
   '--headless',

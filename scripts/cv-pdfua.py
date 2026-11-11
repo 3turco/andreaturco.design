@@ -7,7 +7,7 @@ Chrome tagga il contenuto ma lascia tre lacune:
 - i metadati XMP non hanno titolo, lingua e identificativo PDF/UA.
 Aggiunge anche una descrizione (/Contents) ai link.
 
-Uso: python3 scripts/cv-pdfua.py public/cv-andrea-turco.pdf
+Uso: python3 scripts/cv-pdfua.py cv/cv-andrea-turco.pdf
 Richiede pikepdf: python3 -m pip install pikepdf
 """
 import sys
