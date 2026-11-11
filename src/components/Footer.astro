@@ -93,6 +93,14 @@ const year = new Date().getFullYear();
     color: var(--accent-text);
   }
 
+  /* Come i link (a:hover in global.css): sottolineatura solo al passaggio del mouse. */
+  .footer-link:hover,
+  .footer-link:focus-visible {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+  }
+
   .footer-link {
     font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
