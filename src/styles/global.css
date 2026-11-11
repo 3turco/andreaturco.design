@@ -141,7 +141,6 @@ a:hover {
    - Card grandi: underline sull'intera card è rumore visivo
    - Link con border-bottom permanente: eviterebbe il "doppio underline" */
 .logo:hover,
-.cv-button:hover,
 .work-card:hover,
 .cs-nav-item:hover,
 .about-photo:hover,

@@ -24,8 +24,6 @@ const nav = [
   { label: isIt ? 'Contatti' : 'Contact', href: `${homeHref}#contact`, hidden: !isHome },
 ];
 
-const cvHref = isIt ? '/cv-andrea-turco.pdf' : '/cv-andrea-turco.pdf';
-
 // Un link è "attivo" (pallino rosso) se rappresenta la sezione corrente del sito.
 // Regola:
 // 1) Link con fragment (#) → attivi solo via scroll-spy JS, mai qui in server
@@ -75,8 +73,6 @@ function isActive(href: string, currentPath: string, homeHref: string): boolean 
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
         </svg>
       </button>
-
-      <a href={cvHref} class="cv-button" download>{isIt ? 'Scarica CV' : 'Download CV'}<span class="visually-hidden"> (PDF)</span></a>
     </div>
   </div>
 </header>
@@ -254,30 +250,12 @@ function isActive(href: string, currentPath: string, homeHref: string): boolean 
     border-color: var(--text);
   }
 
-  .cv-button {
-    font-size: 14px;
-    font-weight: 600;
-    padding: 11px 20px;
-    border: 1px solid var(--text);
-    background: var(--text);
-    color: var(--bg);
-    cursor: pointer;
-    transition: all var(--transition);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
 
-  .cv-button:hover {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: #FFFFFF;
-  }
 
   @media (max-width: 900px) {
     .header-inner { height: 96px; }
     .logo-img { width: 72px; height: 72px; }
     nav { display: none; }
-    .cv-button { display: none; }
     .header-actions { gap: 12px; }
   }
 </style>
